@@ -10,7 +10,7 @@ bind = "127.0.0.1:25252"
 workers = 4
 
 # flask config
-GOOGLE_ID = "REPLACE ME"
-GOOGLE_SECRET = "REPLACE ME"
+GOOGLE_CONSUMER_KEY = "REPLACE ME"
+GOOGLE_CONSUMER_SECRET = "REPLACE ME"
 SECRET_KEY = "Change this to an actually secret value"
 DEBUG = True
