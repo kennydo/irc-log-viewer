@@ -1,14 +1,22 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
-<ul>
-{% for channel in channels %}
-    <li><a href="{{ url_for('.list_channel_dates', user=user, channel=channel) }}">{{ channel }}</a></li>
-{% endfor %}
-</ul>
-</body>
-</html>
+{% extends "layout.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="pure-u-1">
+    <h1>{{ title }}</h1>
+</div>
+{% if channels %}
+<div class="pure-u-1">
+    <ul>
+    {%- for channel in channels|sort %}
+        <li><a href="{{ channel_url_function(channel) }}">{{ channel }}</a></li>
+    {%- endfor %}
+    </ul>
+</div>
+{% else %}
+<div class="pure-u-1">
+    No logs found.
+</div>
+{% endif %}
+{% endblock %}

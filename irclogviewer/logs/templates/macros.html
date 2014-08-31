@@ -1,17 +1,32 @@
 {% macro calendar_month(calendar, year, month, log_dates, date_url_function) %}
-    <h1>{{ year }} {{ month }}</h1>
-    {% for week in calendar.itermonthdates(year, month)|batch(7) %}
-        {% for date in week %}
-            {% if date.month == month %}
-                {% if date in log_dates %}
-                    <b><a href="{{ date_url_function(date) }}">{{ date.day }}</a></b>
-                {% else %}
-                    {{ date.day }}
-                {% endif %}
-            {% else %}
-                <i>{{ date.day }}</i>
-            {% endif %}
-        {% endfor %}
-        <br />
-    {% endfor %}
-{% endmacro %}
+<table class="pure-table pure-table-bordered log-table">
+    <caption>{{ month | to_month_name }} {{ year }}</caption>
+    <thead>
+        <tr>
+            <th>日</th>
+            <th>月</th>
+            <th>火</th>
+            <th>水</th>
+            <th>木</th>
+            <th>金</th>
+            <th>土</th>
+        </tr>
+    </thead>
+
+{%- for week in calendar.itermonthdates(year, month)|batch(7) %}
+    <tr>
+    {%- for date in week %}
+        {%- if date.month == month %}
+            {% if date in log_dates -%}
+                <td><a href="{{ date_url_function(date) }}" class="pure-button pure-button-primary">{{ date.day }}</a></td>
+            {%- else -%}
+                <td><a href="#" class="pure-button pure-button-disabled">{{ date.day }}</a></td>
+            {%- endif %}
+        {%- else %}
+            <td class="wrong-month">{{ date.day }}</td>
+        {%- endif %}
+    {%- endfor %}
+    </tr>
+{%- endfor %}
+</table>
+{%- endmacro %}

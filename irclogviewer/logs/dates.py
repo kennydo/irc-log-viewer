@@ -18,19 +18,6 @@ def sorted_unique_year_months(date_set):
     return sorted(year_months)
 
 
-def sorted_unique_log_dates(logs):
-    """Get a sorted list (ascending) of the :class:`datetime.date` objects
-    of the given ``logs``.
-    :type logs: list of :class:`irclogviewer.logs.znc.ZncLog`
-    :rtype: list of :class:`datetime.date`
-    """
-    unique_dates = set()
-    for log in logs:
-        unique_dates.add(log.date)
-
-    return sorted(unique_dates)
-
-
 def parse_log_date(raw_date):
     return datetime.datetime.strptime(raw_date, "%Y%m%d").date()
 
