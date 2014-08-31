@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+{% from "macros.html" import calendar_month %}
+{% for year, month in year_month_tuples|reverse %}
+    {{ calendar_month(calendar, year, month, log_dates, date_url_function) }}
+{% endfor %}
+</body>
+</html>

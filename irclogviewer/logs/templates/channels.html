@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<ul>
+{% for channel in channels %}
+    <li><a href="{{ url_for('.list_channel_dates', user=user, channel=channel) }}">{{ channel }}</a></li>
+{% endfor %}
+</ul>
+</body>
+</html>

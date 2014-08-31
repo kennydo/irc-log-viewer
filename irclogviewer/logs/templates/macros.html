@@ -1,0 +1,17 @@
+{% macro calendar_month(calendar, year, month, log_dates, date_url_function) %}
+    <h1>{{ year }} {{ month }}</h1>
+    {% for week in calendar.itermonthdates(year, month)|batch(7) %}
+        {% for date in week %}
+            {% if date.month == month %}
+                {% if date in log_dates %}
+                    <b><a href="{{ date_url_function(date) }}">{{ date.day }}</a></b>
+                {% else %}
+                    {{ date.day }}
+                {% endif %}
+            {% else %}
+                <i>{{ date.day }}</i>
+            {% endif %}
+        {% endfor %}
+        <br />
+    {% endfor %}
+{% endmacro %}

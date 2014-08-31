@@ -4,7 +4,7 @@ import datetime
 import logging
 import re
 import os
-
+from .dates import parse_log_date
 
 LOG_FILENAME_PATTERN = re.compile(
     '(?P<channel>.+)_(?P<date>\d{4}\d{2}\d{2}).log'
@@ -44,6 +44,7 @@ class ZncUser(object):
         :raises ValueError: if the ``user_path`` isn't a valid directory
         """
         self.user_path = user_path
+        self.name = os.path.basename(self.user_path)
         self.logs = ZncLogManager(user_path)
 
     def __repr__(self):
@@ -72,7 +73,7 @@ class ZncUserMapping(Mapping):
         user_directory = os.path.join(self.users_path, user)
         if not os.path.isdir(user_directory):
             raise KeyError(
-                'No user directory found for user {0} in path {1}'.format(
+                'No user directory found for user "{0}" in path {1}'.format(
                     user, self.users_path)
             )
         return ZncUser(user_directory)
@@ -107,7 +108,7 @@ class ZncLog(object):
         groups = match.groupdict()
 
         channel = groups['channel']
-        date = datetime.datetime.strptime(groups['date'], "%Y%m%d").date()
+        date = parse_log_date(groups['date'])
 
         return cls(log_path, channel, date)
 
