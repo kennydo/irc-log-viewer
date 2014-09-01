@@ -1,6 +1,7 @@
 import calendar
 import logging
 from flask import abort, Blueprint, render_template, Response, url_for
+from functools import lru_cache
 from .dates import sorted_unique_year_months, parse_log_date
 from .irc_parser import parse_irc_line
 from .znc import ZncDirectory, ZncUser, ZncLog
@@ -31,6 +32,15 @@ def irc_line_state_to_css_classes(irc_line_state):
         classes.append("irc-bg-" + str(irc_line_state.bg_color))
     return classes
 
+
+@lru_cache(maxsize=128)
+def irc_nick_to_color_id(nick):
+    # Not all colors are suitable for colorizing a nick
+    colors = [2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13]
+    ascii_sum = sum(ord(char) for char in nick)
+    return colors[ascii_sum % len(colors)]
+
+
 def get_znc_user_or_404(user):
     if user not in znc_directory.users:
         abort(404)
@@ -48,6 +58,7 @@ def init_znc_directory(setup_state):
         dict(
             to_month_name= to_month_name,
             irc_line_state_to_css_classes=irc_line_state_to_css_classes,
+            irc_nick_to_color_id=irc_nick_to_color_id,
         )
     )
 

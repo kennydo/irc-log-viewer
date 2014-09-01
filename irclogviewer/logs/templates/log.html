@@ -28,7 +28,7 @@
 <span class="irc-line {% if irc_line.type != 'message' %}irc-line-{{irc_line.type}}{% endif %}">
     <span class="irc-timestamp">{{ irc_line.timestamp }}</span>
     {% if irc_line.nick %}
-    <span class="irc-nick">{{ irc_line.nick }}</span>
+    <span class="irc-nick irc-fg-{{ irc_line.nick|irc_nick_to_color_id }}">{{ irc_line.nick }}</span>
     {% endif %}
     <span class="irc-message">
         {% for fragment in irc_line.message_fragments %}
