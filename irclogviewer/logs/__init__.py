@@ -2,6 +2,7 @@ import calendar
 import logging
 from flask import abort, Blueprint, render_template, Response, url_for
 from .dates import sorted_unique_year_months, parse_log_date
+from .irc_parser import parse_irc_line
 from .znc import ZncDirectory, ZncUser, ZncLog
 
 logger = logging.getLogger(__name__)
@@ -144,5 +145,5 @@ def get_log(user, channel, date):
     def generate_lines():
         with open(log.log_path, 'r', encoding='utf-8') as f:
             for line in f:
-                yield line
+                yield repr(parse_irc_line(line))
     return Response(generate_lines(), mimetype='text/html')
