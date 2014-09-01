@@ -218,11 +218,11 @@ class ZncLogManager(object):
         """
         if not date or not channel:
             raise ValueError("Neither date nor channel were specified")
-        try:
-            znc_log = next(self.filter(date=date, channel=channel))
-        except StopIteration:
-            znc_log = None
-        return znc_log
+
+        znc_logs = self.filter(date=date, channel=channel)
+        if znc_logs:
+            return znc_logs[0]
+        return None
 
     def __repr__(self):
         return '<ZncLogManager logs_path={logs_path}>'.format(**self.__dict__)

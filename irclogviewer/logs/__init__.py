@@ -1,6 +1,6 @@
 import calendar
 import logging
-from flask import abort, Blueprint, render_template, url_for, jsonify
+from flask import abort, Blueprint, render_template, Response, url_for
 from .dates import sorted_unique_year_months, parse_log_date
 from .znc import ZncDirectory, ZncUser, ZncLog
 
@@ -136,4 +136,13 @@ def list_channel_dates(user, channel):
 
 @logs.route('/users/<user>/channels/<channel>/<date>')
 def get_log(user, channel, date):
-    pass
+    znc_user = get_znc_user_or_404(user)
+    log = znc_user.logs.get(date=parse_log_date(date), channel=channel)
+    if not log:
+        abort(404)
+
+    def generate_lines():
+        with open(log.log_path, 'r', encoding='utf-8') as f:
+            for line in f:
+                yield line
+    return Response(generate_lines(), mimetype='text/html')
