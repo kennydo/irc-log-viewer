@@ -4,7 +4,15 @@
 
 {% block content %}
 <div class="pure-u-1">
+    <a name="top"></a>
     <h1>{{ channel }} on {{ date }}</h1>
+</div>
+
+<div class="pure-u-1">
+    <a href="#bottom" class="pure-button pure-button-primary">
+        <i class="fa fa-arrow-down"></i>
+        Bottom
+    </a>
 </div>
 
 <div class="pure-u-1">
@@ -23,5 +31,13 @@
     </span>
 </span>
 {% endfor %}
+<a name="bottom"></a>
+</div>
+
+<div class="pure-u-1">
+    <a href="#top" class="pure-button pure-button-primary">
+        <i class="fa fa-arrow-up"></i>
+        Top
+    </a>
 </div>
 {% endblock %}
