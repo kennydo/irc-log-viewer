@@ -14,3 +14,4 @@ GOOGLE_CONSUMER_KEY = "REPLACE ME"
 GOOGLE_CONSUMER_SECRET = "REPLACE ME"
 SECRET_KEY = "Change this to an actually secret value"
 DEBUG = True
+ZNC_DIRECTORY = '/replace/me/here/.znc'
