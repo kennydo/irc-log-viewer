@@ -2,6 +2,13 @@
 
 {% block title %}{{ channel }} on {{ date }}{% endblock %}
 
+{% macro refresh_button() %}
+     <a href="{{ url_for('.get_log', user=user, channel=channel, date=date.strftime("%Y%m%d")) }}" class="pure-button pure-button-primary">
+        <i class="fa fa-refresh"></i>
+        Refresh
+    </a>
+{% endmacro %}
+
 {% block content %}
 <div class="pure-u-1">
     <a name="top"></a>
@@ -13,6 +20,7 @@
         <i class="fa fa-arrow-down"></i>
         Bottom
     </a>
+    {{ refresh_button() }}
 </div>
 
 <div class="pure-u-1">
@@ -39,5 +47,6 @@
         <i class="fa fa-arrow-up"></i>
         Top
     </a>
+    {{ refresh_button() }}
 </div>
 {% endblock %}
