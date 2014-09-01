@@ -25,9 +25,9 @@ class IrcLineType(Enum):
     action = re.compile(r'^\* \S+ .*$')
 
 
-class LineState(
+class IrcLineState(
     namedtuple(
-        'LineState',
+        'IrcLineState',
         ['fg_color', 'bg_color', 'is_bold', 'has_underline'])):
 
     @classmethod
@@ -127,7 +127,7 @@ def parse_irc_line(raw_line):
     else:
         line_type = "message"
 
-    line_state = LineState.default_state()
+    line_state = IrcLineState.default_state()
 
     if line_type is not "message":
         fragment = IrcLineFragment(state=line_state,

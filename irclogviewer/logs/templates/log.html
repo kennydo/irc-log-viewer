@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ channel }} on {{ date }}{% endblock %}
+
+{% block content %}
+<div class="pure-u-1">
+    <h1>{{ channel }} on {{ date }}</h1>
+</div>
+
+<div class="pure-u-1">
+{% for irc_line in irc_lines %}
+<span class="irc-line {% if irc_line.type != 'message' %}irc-line-{{irc_line.type}}{% endif %}">
+    <span class="irc-timestamp">{{ irc_line.timestamp }}</span>
+    {% if irc_line.nick %}
+    <span class="irc-nick">{{ irc_line.nick }}</span>
+    {% endif %}
+    <span class="irc-message">
+        {% for fragment in irc_line.message_fragments %}
+        <span class="irc-fragment {{ fragment.state |  irc_line_state_to_css_classes | join(' ') }}">
+            {{ fragment.text }}
+        </span>
+        {% endfor %}
+    </span>
+</span>
+{% endfor %}
+</div>
+{% endblock %}

@@ -14,9 +14,22 @@ def inject_znc_users():
     users =[user for user in znc_directory.users.keys()]
     return dict(znc_users=users)
 
+
 def to_month_name(month_number):
     return calendar.month_name[month_number]
 
+
+def irc_line_state_to_css_classes(irc_line_state):
+    classes = []
+    if irc_line_state.is_bold:
+        classes.append("irc-bold")
+    if irc_line_state.has_underline:
+        classes.append("irc-underline")
+    if irc_line_state.fg_color:
+        classes.append("irc-fg-" + str(irc_line_state.fg_color))
+    if irc_line_state.bg_color:
+        classes.append("irc-bg-" + str(irc_line_state.bg_color))
+    return classes
 
 def get_znc_user_or_404(user):
     if user not in znc_directory.users:
@@ -31,7 +44,12 @@ def init_znc_directory(setup_state):
 
     znc_directory = ZncDirectory(app.config.get('ZNC_DIRECTORY'))
     app.context_processor(inject_znc_users)
-    app.jinja_env.filters['to_month_name'] = to_month_name
+    app.jinja_env.filters.update(
+        dict(
+            to_month_name= to_month_name,
+            irc_line_state_to_css_classes=irc_line_state_to_css_classes,
+        )
+    )
 
 
 @logs.route('/')
@@ -138,12 +156,17 @@ def list_channel_dates(user, channel):
 @logs.route('/users/<user>/channels/<channel>/<date>')
 def get_log(user, channel, date):
     znc_user = get_znc_user_or_404(user)
-    log = znc_user.logs.get(date=parse_log_date(date), channel=channel)
+    date = parse_log_date(date)
+    log = znc_user.logs.get(date=date, channel=channel)
     if not log:
         abort(404)
 
-    def generate_lines():
-        with open(log.log_path, 'r', encoding='utf-8') as f:
-            for line in f:
-                yield repr(parse_irc_line(line))
-    return Response(generate_lines(), mimetype='text/html')
+    with open(log.log_path, 'r', encoding='utf-8') as f:
+        irc_lines = [parse_irc_line(line ) for line in f]
+    return render_template(
+        'log.html',
+        user=user,
+        channel=channel,
+        date=date,
+        irc_lines=irc_lines,
+    )
