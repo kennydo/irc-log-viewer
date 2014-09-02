@@ -1,7 +1,8 @@
 import calendar
 import logging
-from flask import abort, Blueprint, render_template, Response, url_for
+from flask import abort, Blueprint, Markup, render_template, url_for
 from functools import lru_cache
+import re
 from .dates import sorted_unique_year_months, parse_log_date
 from .irc_parser import parse_irc_line
 from .znc import ZncDirectory, ZncUser, ZncLog
@@ -33,6 +34,19 @@ def irc_line_state_to_css_classes(irc_line_state):
     return classes
 
 
+# based on https://gist.github.com/gruber/249502
+# from http://daringfireball.net/2010/07/improved_regex_for_matching_urls
+URL_REGEX = re.compile(
+    r'(?i)\b((?:[a-z][\w-]+:(?:/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.]'
+    r'[a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\('
+    r'([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?«»“”‘’]))'
+)
+
+
+def plain_urls_to_links(irc_text):
+    return Markup(URL_REGEX.sub(r'<a href="\g<1>" target="_blank">\g<1></a>', irc_text))
+
+
 @lru_cache(maxsize=128)
 def irc_nick_to_color_id(nick):
     # Not all colors are suitable for colorizing a nick
@@ -59,6 +73,7 @@ def init_znc_directory(setup_state):
             to_month_name= to_month_name,
             irc_line_state_to_css_classes=irc_line_state_to_css_classes,
             irc_nick_to_color_id=irc_nick_to_color_id,
+            plain_urls_to_links=plain_urls_to_links,
         )
     )
 

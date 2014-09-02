@@ -33,7 +33,7 @@
     <span class="irc-message">
         {% for fragment in irc_line.message_fragments %}
         <span class="irc-fragment {{ fragment.state |  irc_line_state_to_css_classes | join(' ') }}">
-            {{ fragment.text }}
+            {{ fragment.text | plain_urls_to_links }}
         </span>
         {% endfor %}
     </span>
