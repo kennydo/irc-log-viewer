@@ -3,9 +3,21 @@ from enum import Enum
 import re
 
 
-IrcLine = namedtuple('IrcLine',
-                     ['timestamp', 'nick', 'type', 'message_fragments'])
-IrcLineFragment = namedtuple('IrcLineFragment', ['state', 'text'])
+class IrcLineFragment(namedtuple('IrcLineFragment', ['state', 'text'])):
+    """This class represents the formatting ``state`` of a substring ``text``
+    from an IRC log line.
+    """
+    pass
+
+
+class IrcLine(namedtuple('IrcLine',
+              ['timestamp', 'nick', 'type', 'message_fragments'])):
+    """This class is the end result of parsing a line from an IRC log.
+    The ``timestamp`` is a string. The ``nick`` is a string or None.
+    The ``type`` is a member of :class:`IrcLineType`.
+    The ``message_fragments`` is a list of :class:`IrcLineFragment`.
+    """
+    pass
 
 
 class IrcControlCode(Enum):
@@ -34,12 +46,23 @@ class IrcLineState(
     namedtuple(
         'IrcLineState',
         ['fg_color', 'bg_color', 'is_bold', 'has_underline'])):
+    """This class represents the formatting options for a substring of a line
+    from an IRC log."""
 
     @classmethod
     def default_state(cls):
+        """Create a new :class:`IrcLineState` with the initial configuration.
+
+        :rtype: IrcLineState
+        """
         return cls(None, None, False, False)
 
     def reset(self):
+        """Return a new :class:`IrcLineState` that has the default state
+        (no foreground color, no background color, not bold, not underlined).
+
+        :rtype: IrcLineState
+        """
         return self._replace(
             fg_color=None,
             bg_color=None,
@@ -48,21 +71,45 @@ class IrcLineState(
         )
 
     def toggle_bold(self):
+        """Return a new :class:`IrcLineState` that has the ``is_bold`` flag
+        toggled.
+
+        :rtype: IrcLineState
+        """
         return self._replace(is_bold=not self.is_bold)
 
     def toggle_underline(self):
+        """Return a new :class:`IrcLineState` that has the ``has_underline``
+        flag toggled.
+
+        :rtype: IrcLineState
+        """
         return self._replace(has_underline=not self.has_underline)
 
     def set_color(self, fg_color_id, bg_color_id=None):
+        """Return a new :class:`IrcLineState` that has the updated
+        ``fg_color_id`` and ``bg_color_id``.
+
+        :param int fg_color_id: foreground text color (from [0, 15])
+        :param int bg_color_id: background text color (from [0, 15])
+        :rtype: IrcLineState
+        """
         return self._replace(
             fg_color=fg_color_id,
             bg_color=bg_color_id,
         )
 
 
-def ctrl_to_color_ids(fragment_text):
+def ctrl_to_color_ids(control_code_sequence):
+    """Parse the foreground color and the optional background color from a
+    coloring control code sequence.
+
+    :param str control_code_sequence: a string from :function:`tokenize_line`
+    :return: the foreground and background color IDs from the control sequence
+    :rtype: tuple of (int or None, int or None)
+    """
     # the first character is CTRL_COLOR
-    colors = fragment_text[1:].split(',')
+    colors = control_code_sequence[1:].split(',')
     if colors[0].isdigit():
         fg_color_id = int(colors[0])
     else:
@@ -75,33 +122,40 @@ def ctrl_to_color_ids(fragment_text):
 
 
 def tokenize_line(line):
-    """
-    Split text into fragments that are either plain text
-    or a control code sequence.
+    """Split text into fragments that are either plain text or a control code
+    sequence.
+
+    :param str line: string from IRC log
+    :returns: list with elements that are either plain text or control codes
+    :rtype: list of str
     """
     line = CTRL_REGEX.sub("\n\g<0>\n", line)
-    fragments = line.split("\n")
-    return fragments
+    tokens = line.split("\n")
+    return tokens
 
 
 def split_on_timestamp(raw_line):
-    """
-    Splits a raw irc log line into 2 components: timestamp, and everything else
+    """Splits a raw irc log line into the time stamp and everything else
+
+    :param str raw_line: a complete line from an IRC log
+    :returns: tuple of the time stamp and everything else from the input line
+    :rtype: tuple of (str, str)
     """
     timestamp, line = raw_line.split(" ", 1)
 
-    # remove the brackets [] around the timestamp
+    # remove the square brackets [] around the timestamp
     timestamp = timestamp[1:-1]
     return timestamp, line
 
 
 def split_on_nick(line):
-    """
-    If the input line has a "<nick>" element at the start, it returns
+    """If the input line has a "<nick>" element at the start, it returns
     (nick, rest of line), else it returns (None, original input line).
 
-    The input to this should be the component of the line after the timestamp
-    has already been removed.
+    :param str line: the component of the line after the timestamp
+        has already been removed by :function:`split_on_timestamp`.
+    :returns: a tuple of the nick (or None) and the rest of the line
+    :rtype: tuple of (str, str)
     """
     match = IrcLineType.message.value.match(line)
     if match:
@@ -112,6 +166,13 @@ def split_on_nick(line):
 
 
 def parse_irc_line(raw_line):
+    """Parse a whole line from an IRC log into an :class:`IrcLine`.
+
+    :param raw_line: a complete line from an IRC log
+    :returns: an :class:`IrcLine` that separates the original ``raw_line`` into
+        its components
+    :rtype: IrcLine
+    """
     raw_line = raw_line.strip()
     timestamp, line = split_on_timestamp(raw_line)
     nick = None
