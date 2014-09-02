@@ -27,7 +27,8 @@ def init_znc_directory(setup_state):
     global znc_directory
     app = setup_state.app
 
-    znc_directory = ZncDirectory(app.config.get('ZNC_DIRECTORY'))
+    if 'ZNC_DIRECTORY' in app.config:
+        znc_directory = ZncDirectory(app.config.get('ZNC_DIRECTORY'))
     app.context_processor(inject_znc_users)
     app.jinja_env.filters.update(**filters_mapping)
 

@@ -53,7 +53,7 @@ class IrcLineState(
     def default_state(cls):
         """Create a new :class:`IrcLineState` with the initial configuration.
 
-        :rtype: IrcLineState
+        :rtype: :class:`IrcLineState`
         """
         return cls(None, None, False, False)
 
@@ -61,7 +61,7 @@ class IrcLineState(
         """Return a new :class:`IrcLineState` that has the default state
         (no foreground color, no background color, not bold, not underlined).
 
-        :rtype: IrcLineState
+        :rtype: :class:`IrcLineState`
         """
         return self._replace(
             fg_color=None,
@@ -74,7 +74,7 @@ class IrcLineState(
         """Return a new :class:`IrcLineState` that has the ``is_bold`` flag
         toggled.
 
-        :rtype: IrcLineState
+        :rtype: :class:`IrcLineState`
         """
         return self._replace(is_bold=not self.is_bold)
 
@@ -82,7 +82,7 @@ class IrcLineState(
         """Return a new :class:`IrcLineState` that has the ``has_underline``
         flag toggled.
 
-        :rtype: IrcLineState
+        :rtype: :class:`IrcLineState`
         """
         return self._replace(has_underline=not self.has_underline)
 
@@ -92,7 +92,7 @@ class IrcLineState(
 
         :param int fg_color_id: foreground text color (from [0, 15])
         :param int bg_color_id: background text color (from [0, 15])
-        :rtype: IrcLineState
+        :rtype: :class:`IrcLineState`
         """
         return self._replace(
             fg_color=fg_color_id,
