@@ -1,11 +1,10 @@
 import calendar
 import logging
-from flask import abort, Blueprint, Markup, render_template, url_for
-from functools import lru_cache
-import re
+from flask import abort, Blueprint, render_template, url_for
 from .dates import sorted_unique_year_months, parse_log_date
+from .filters import filters_mapping
 from .irc_parser import parse_irc_line
-from .znc import ZncDirectory, ZncUser, ZncLog
+from .znc import ZncDirectory
 
 logger = logging.getLogger(__name__)
 logs = Blueprint('logs', __name__, template_folder='templates')
@@ -13,46 +12,8 @@ znc_directory = None
 
 
 def inject_znc_users():
-    users =[user for user in znc_directory.users.keys()]
+    users = [user for user in znc_directory.users.keys()]
     return dict(znc_users=users)
-
-
-def to_month_name(month_number):
-    return calendar.month_name[month_number]
-
-
-def irc_line_state_to_css_classes(irc_line_state):
-    classes = []
-    if irc_line_state.is_bold:
-        classes.append("irc-bold")
-    if irc_line_state.has_underline:
-        classes.append("irc-underline")
-    if irc_line_state.fg_color:
-        classes.append("irc-fg-" + str(irc_line_state.fg_color))
-    if irc_line_state.bg_color:
-        classes.append("irc-bg-" + str(irc_line_state.bg_color))
-    return classes
-
-
-# based on https://gist.github.com/gruber/249502
-# from http://daringfireball.net/2010/07/improved_regex_for_matching_urls
-URL_REGEX = re.compile(
-    r'(?i)\b((?:[a-z][\w-]+:(?:/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.]'
-    r'[a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\('
-    r'([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?«»“”‘’]))'
-)
-
-
-def plain_urls_to_links(irc_text):
-    return Markup(URL_REGEX.sub(r'<a href="\g<1>" target="_blank">\g<1></a>', irc_text))
-
-
-@lru_cache(maxsize=128)
-def irc_nick_to_color_id(nick):
-    # Not all colors are suitable for colorizing a nick
-    colors = [2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13]
-    ascii_sum = sum(ord(char) for char in nick)
-    return colors[ascii_sum % len(colors)]
 
 
 def get_znc_user_or_404(user):
@@ -68,14 +29,7 @@ def init_znc_directory(setup_state):
 
     znc_directory = ZncDirectory(app.config.get('ZNC_DIRECTORY'))
     app.context_processor(inject_znc_users)
-    app.jinja_env.filters.update(
-        dict(
-            to_month_name= to_month_name,
-            irc_line_state_to_css_classes=irc_line_state_to_css_classes,
-            irc_nick_to_color_id=irc_nick_to_color_id,
-            plain_urls_to_links=plain_urls_to_links,
-        )
-    )
+    app.jinja_env.filters.update(**filters_mapping)
 
 
 @logs.route('/')
@@ -97,7 +51,7 @@ def show_calendar_of_logs(logs, date_url_function, title):
         title=title,
         calendar=cal,
         log_dates=log_dates,
-        most_recent_log_date = most_recent_log_date,
+        most_recent_log_date=most_recent_log_date,
         year_month_tuples=year_month_tuples,
         date_url_function=date_url_function,
     )
@@ -188,7 +142,7 @@ def get_log(user, channel, date):
         abort(404)
 
     with open(log.log_path, 'r', encoding='utf-8') as f:
-        irc_lines = [parse_irc_line(line ) for line in f]
+        irc_lines = [parse_irc_line(line) for line in f]
     return render_template(
         'log.html',
         user=user,

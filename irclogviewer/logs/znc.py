@@ -1,6 +1,5 @@
 from collections import Mapping
 from functools import total_ordering
-import datetime
 import logging
 import re
 import os

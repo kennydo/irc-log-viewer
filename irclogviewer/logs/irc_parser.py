@@ -3,6 +3,11 @@ from enum import Enum
 import re
 
 
+IrcLine = namedtuple('IrcLine',
+                     ['timestamp', 'nick', 'type', 'message_fragments'])
+IrcLineFragment = namedtuple('IrcLineFragment', ['state', 'text'])
+
+
 class IrcControlCode(Enum):
     color = '\x03'      # ^C = color
     reset = '\x0F'      # ^O = reset
@@ -55,10 +60,6 @@ class IrcLineState(
         )
 
 
-IrcLine = namedtuple('IrcLine',
-                     ['timestamp', 'nick', 'type', 'message_fragments'])
-IrcLineFragment = namedtuple('IrcLineFragment', ['state', 'text'])
-
 def ctrl_to_color_ids(fragment_text):
     # the first character is CTRL_COLOR
     colors = fragment_text[1:].split(',')
@@ -70,7 +71,7 @@ def ctrl_to_color_ids(fragment_text):
         bg_color_id = None
     else:
         bg_color_id = int(colors[1])
-    return (fg_color_id, bg_color_id)
+    return fg_color_id, bg_color_id
 
 
 def tokenize_line(line):
