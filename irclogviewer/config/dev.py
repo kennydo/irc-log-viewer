@@ -15,3 +15,16 @@ GOOGLE_CONSUMER_SECRET = "REPLACE ME"
 SECRET_KEY = "Change this to an actually secret value"
 DEBUG = True
 ZNC_DIRECTORY = '/replace/me/here/.znc'
+
+OWNER_EMAIL = 'test@example.com'
+
+# ACL rules are defined as tuples of (action, email_address, znc_user, channel)
+# Use '*' when you want wildcards for email_address, znc_user, or channel.
+# This app uses the action of the first rule that matches.
+# This app requires that you must set at least 1 rule in ZNC_ACL.
+# To allow everything for everyone, have this rule:
+# ('allow', '*', '*', '*')
+ZNC_ACL = [
+    ('allow', OWNER_EMAIL, '*', '*'),
+    ('deny', '*', '*', '*'),
+]
