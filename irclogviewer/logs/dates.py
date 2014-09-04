@@ -19,4 +19,9 @@ def sorted_unique_year_months(date_set):
 
 
 def parse_log_date(raw_date):
+    """Parse the YYYYMMDD date format that ZNC uses.
+
+    :param str raw_date: a string of the form YYYYMMDD
+    :returns: a :class:`~datetime.date` object
+    """
     return datetime.datetime.strptime(raw_date, "%Y%m%d").date()

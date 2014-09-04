@@ -1,10 +1,7 @@
-import logging
-
-from flask import Blueprint, jsonify, redirect, request, session, url_for
+from flask import Blueprint, redirect, request, session, url_for
 from flask_oauthlib.client import OAuth
 
 
-logger = logging.getLogger(__name__)
 auth = Blueprint('auth', __name__, template_folder='templates')
 oauth = OAuth()
 google = oauth.remote_app(
@@ -26,6 +23,12 @@ def init_google(state):
     oauth.init_app(state.app)
 
 
+@google.tokengetter
+def get_google_oauth_token():
+    return session.get('google_token')
+
+
+@auth.route('/')
 @auth.route('/login')
 def login():
     return google.authorize(callback=url_for('.authorized', _external=True))
@@ -34,6 +37,7 @@ def login():
 @auth.route('/logout')
 def logout():
     session.pop('google_token', None)
+    session.pop('user', None)
     return redirect(url_for('.index'))
 
 
@@ -47,17 +51,4 @@ def authorized(resp):
         )
     session['google_token'] = (resp['access_token'], '')
     session['user'] = google.get('userinfo').data
-    return jsonify(session)
-
-
-@google.tokengetter
-def get_google_oauth_token():
-    return session.get('google_token')
-
-
-@auth.route('/')
-def index():
-    if 'google_token' in session:
-        me = google.get('userinfo')
-        return jsonify({"data": me.data})
-    return redirect(url_for('.login'))
+    return redirect(url_for('logs.list_users'))

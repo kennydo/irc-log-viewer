@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "macros.html" import calendar_month %}
+{% from "macros.html" import calendar_month, no_logs_found %}
 
 {% block title %}{{ title }}{% endblock %}
 
@@ -24,7 +24,7 @@
 </div>
 {% else %}
 <div class="pure-u-1">
-No logs found.
+{{ no_logs_found() }}
 </div>
 {% endif %}
 {% endblock %}
