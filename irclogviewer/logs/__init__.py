@@ -33,6 +33,8 @@ def init_znc_directory(setup_state):
 
     if 'ZNC_DIRECTORY' in app.config:
         znc_directory = ZncDirectory(app.config.get('ZNC_DIRECTORY'))
+    else:
+        raise ValueError("ZNC_DIRECTORY was not set in flask config")
     app.context_processor(inject_znc_users)
     app.jinja_env.filters.update(**filters_mapping)
 
