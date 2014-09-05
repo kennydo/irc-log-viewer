@@ -38,7 +38,7 @@ def login():
 def logout():
     session.pop('google_token', None)
     session.pop('user', None)
-    return redirect(url_for('.index'))
+    return redirect(url_for('index'))
 
 
 @auth.route('/login/authorized')
