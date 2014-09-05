@@ -141,6 +141,22 @@ def command_stop(args):
         process.send_signal(signal.SIGKILL)
 
 
+def command_restart(args):
+    """Restart gunicorn, for easy reloading of config"""
+    command_stop(args)
+    command_start(args)
+
+
+def add_config_argument(parser, required=False):
+    """Add the ``--config`` argument to the given ``parser``."""
+    parser.add_argument(
+        "--config",
+        dest="config",
+        required=required,
+        type=file_path_arg_type,
+        help="Path to the combined flask and gunicorn config .py file")
+
+
 if __name__ == "__main__":
     description = "Controls the running and stopping of {0}".format(APP_NAME)
     parser = argparse.ArgumentParser(description=description)
@@ -148,24 +164,18 @@ if __name__ == "__main__":
     subparsers = parser.add_subparsers(title="command")
 
     start_parser = subparsers.add_parser("start", help="Start the app")
-    start_parser.add_argument(
-        "--config",
-        dest="config",
-        required=True,
-        type=file_path_arg_type,
-        help="Path to the combined flask and gunicorn config .py file")
+    add_config_argument(start_parser, required=True)
     start_parser.set_defaults(func=command_start)
 
     stop_parser = subparsers.add_parser("stop", help="Stop the app")
     # We only care about the config if the pidfile is not in the default
     # location.
-    stop_parser.add_argument(
-        "--config",
-        dest="config",
-        required=False,
-        type=file_path_arg_type,
-        help="Path to the combined flask and gunicorn config .py file")
+    add_config_argument(stop_parser, required=False)
     stop_parser.set_defaults(func=command_stop)
+
+    restart_parser = subparsers.add_parser("restart", help="Restart the app")
+    add_config_argument(restart_parser, required=True)
+    restart_parser.set_defaults(func=command_restart)
 
     parsed_args = parser.parse_args()
     parsed_args.func(parsed_args)
