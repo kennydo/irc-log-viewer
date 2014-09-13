@@ -1,4 +1,5 @@
 from collections import Mapping
+import datetime
 from functools import total_ordering
 import logging
 import re
@@ -115,6 +116,12 @@ class ZncLog(object):
         self.log_path = log_path
         self.date = date
         self.channel = channel
+
+        if not os.path.exists(self.log_path):
+            raise ValueError('Log {0} does not exist'.format(self.log_path))
+
+        stat = os.stat(self.log_path)
+        self.modified_time = datetime.datetime.fromtimestamp(stat.st_mtime)
 
     def __repr__(self):
         return '<ZncLog date={date} channel={channel} log_path={log_path}>'.\
