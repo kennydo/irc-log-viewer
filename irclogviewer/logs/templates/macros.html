@@ -36,3 +36,13 @@
         No logs found. You might not have permission to view logs.
     </p>
 {%- endmacro %}
+
+{% macro modified_time(today, datetime) %}
+    {% if datetime.date() == today %}
+        {{ datetime.strftime("%H:%M Today") }}
+    {% elif datetime.year == today.year and datetime.month == today.month %}
+        {{ datetime.strftime("%a, %b %d") }}
+    {% else %}
+        {{ datetime.strftime("%b %d, %Y") }}
+    {% endif %}
+{%- endmacro %}

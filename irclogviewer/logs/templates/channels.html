@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "macros.html" import no_logs_found %}
+{% from "macros.html" import no_logs_found, modified_time %}
 
 {% block title %}{{ title }}{% endblock %}
 
@@ -7,17 +7,42 @@
 <div class="pure-u-1">
     <h1>{{ title }}</h1>
 </div>
-{% if channels %}
+
+{% for user, logs in latest_logs|dictsort %}
 <div class="pure-u-1">
-    <ul>
-    {%- for channel in channels|sort %}
-        <li><a href="{{ channel_url_function(channel) }}">{{ channel }}</a></li>
-    {%- endfor %}
-    </ul>
+    <h2>{{ user.name }}</h2>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Channel</th>
+            <th>Last Modified</th>
+        </tr>
+        </thead>
+        {% for log in logs %}
+            {% if loop.index0 < num_channels_per_user %}
+                <tr>
+                    <td>{{ log.channel }}</td>
+                    <td>{{ modified_time(today, log.modified_time) }}</td>
+                </tr>
+            {% else %}
+                <tr style="display: none;">
+                    <td>{{ log.channel }}</td>
+                    <td>{{ modified_time(today, log.modified_time) }}</td>
+                </tr>
+            {% endif %}
+        {% else %}
+            <tr>
+                <td colspan="2">
+                    {{ no_logs_found() }}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
 </div>
 {% else %}
 <div class="pure-u-1">
-{{ no_logs_found() }}
+    {{ no_logs_found() }}
 </div>
-{% endif %}
+{% endfor %}
 {% endblock %}

@@ -51,4 +51,4 @@ def authorized(resp):
         )
     session['google_token'] = (resp['access_token'], '')
     session['user'] = google.get('userinfo').data
-    return redirect(url_for('logs.list_users'))
+    return redirect(url_for('logs.index'))

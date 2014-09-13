@@ -40,8 +40,8 @@ def init_znc_directory(setup_state):
 
 
 @logs.route('/')
-def list_users():
-    return render_template('users.html')
+def index():
+    return render_template('index.html')
 
 
 def show_calendar_of_logs(logs, date_url_function, title):
@@ -135,28 +135,49 @@ def list_date_channels(user, date):
     )
 
 
-@logs.route('/users/<user>/channels')
-def list_user_channels(user):
-    """List all of the channels that this ``user`` has logs for."""
-    znc_user = get_znc_user_or_404(user)
-    channels = set(
-        log.channel for log in znc_user.logs.all()
-        if email_can_read_channel_logs(
-            get_session_user_email(),
-            znc_user.name,
-            log.channel,
-        )
-    )
+@logs.route('/channels')
+def list_channels():
+    """List all of the channels that each :class:`irclogviewer.logs.znc.ZncUser`
+    has logs for.
+    """
+    # latest_logs maps from ZncUser -> str channel name -> latest ZncLog
+    latest_logs = {}
 
-    def channel_url_function(channel):
-        return url_for('.list_channel_dates', user=user, channel=channel)
+    for znc_user in znc_directory.users.values():
+        latest_logs[znc_user] = {}
+        filtered_logs = [
+            log for log in znc_user.logs.all()
+            if email_can_read_channel_logs(
+                get_session_user_email(),
+                znc_user.name,
+                log.channel,
+            )
+        ]
+
+        for log in filtered_logs:
+            if log.channel in latest_logs[znc_user]:
+                current_latest_log = latest_logs[znc_user][log.channel]
+                if log.modified_time > current_latest_log.modified_time:
+                    latest_logs[znc_user][log.channel] = log
+            else:
+                latest_logs[znc_user][log.channel] = log
+
+    # maps from ZncUser -> list of ZncLog, ordered by modified_time (desc)
+    sorted_latest_logs = {}
+    for znc_user, latest_log_by_channel in latest_logs.items():
+        sorted_latest_logs[znc_user] = [
+            znc_log
+            for channel_name, znc_log
+            in sorted(latest_log_by_channel.items(),
+                      key=lambda item: item[1],
+                      reverse=True)
+        ]
 
     return render_template(
         'channels.html',
-        title='Channels for {0}'.format(user),
-        user=user,
-        channels=channels,
-        channel_url_function=channel_url_function,
+        title='Channels',
+        latest_logs=sorted_latest_logs,
+        num_channels_per_user=10,
     )
 
 

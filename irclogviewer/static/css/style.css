@@ -16,25 +16,6 @@
     display: block;
     padding: 0.25em 0.5em;
 }
-.users-list{
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    width: 18em;
-}
-.users-list li{
-    margin: 0.5em;
-    padding: 0.5em;
-    background: rgba(223, 117, 10, 0.3);
-    border-radius: 4px;
-}
-.users-list .name{
-    text-align: center;
-    color: rgba(0, 0, 0, 0.8);
-    margin: 0;
-    padding: 0.2em 0;
-    font-size: 1.2em;
-}
 
 .irc-line{
     display: block;
