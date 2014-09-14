@@ -1,5 +1,15 @@
 {% extends "layout.html" %}
-{% from "macros.html" import no_logs_found %}
+{% from "macros.html" import no_logs_found, modified_time %}
+
+{% if specific_date %}
+    {% set title="Channels on " + specific_date.strftime("%a, %b %d, %Y") %}
+    {% set date_before_this_day = specific_date|date_before %}
+    {% if specific_date != today %}
+        {% set date_after_this_day = specific_date|date_after %}
+    {% endif %}
+{% else %}
+    {% set title="All Channels" %}
+{% endif %}
 
 {% block title %}{{ title }}{% endblock %}
 
@@ -7,17 +17,59 @@
 <div class="pure-u-1">
     <h1>{{ title }}</h1>
 </div>
-{% if channels %}
+
+{% if specific_date %}
 <div class="pure-u-1">
-    <ul>
-    {%- for channel in channels|sort %}
-        <li><a href="{{ channel_url_function(channel) }}">{{ channel }}</a></li>
-    {%- endfor %}
-    </ul>
-</div>
-{% else %}
-<div class="pure-u-1">
-{{ no_logs_found() }}
+    {% if date_before_this_day %}
+        <a href="{{ url_for('.list_channels', date=date_before_this_day) }}" class="pure-button pure-button-primary">
+            <i class="fa fa-chevron-left"></i>
+            Earlier
+        </a>
+    {% endif %}
+    {% if date_after_this_day %}
+        <a href="{{ url_for('.list_channels', date=date_after_this_day) }}" class="pure-button pure-button-primary">
+            Later
+            <i class="fa fa-chevron-right"></i>
+        </a>
+    {% endif %}
 </div>
 {% endif %}
+
+{% for user, logs in latest_logs|dictsort %}
+    {% if logs %}
+<div class="pure-u-1">
+    <h2>{{ user.name }}</h2>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Channel</th>
+            <th>Last Modified</th>
+        </tr>
+        </thead>
+        {% for log in logs %}
+            {% if loop.index0 < config.get("NUM_TOP_CHANNELS_PER_USER", 10) %}
+                <tr>
+                    <td>
+                        <a href="{{ url_for('.get_log', user=user.name, channel=log.channel, date=log.date) }}">
+                            {{ log.channel }}
+                        </a>
+                    </td>
+                    <td>{{ modified_time(today, log.modified_time) }}</td>
+                </tr>
+            {% else %}
+                <tr style="display: none;">
+                    <td>{{ log.channel }}</td>
+                    <td>{{ modified_time(today, log.modified_time) }}</td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+</div>
+    {% endif %}
+{% else %}
+<div class="pure-u-1">
+    {{ no_logs_found() }}
+</div>
+{% endfor %}
 {% endblock %}

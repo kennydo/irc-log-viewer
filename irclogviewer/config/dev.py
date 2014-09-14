@@ -28,3 +28,7 @@ ZNC_ACL = [
     ('allow', OWNER_EMAIL, '*', '*'),
     ('deny', '*', '*', '*'),
 ]
+
+
+# The number of channels per user you want to list by default.
+NUM_TOP_CHANNELS_PER_USER = 6
