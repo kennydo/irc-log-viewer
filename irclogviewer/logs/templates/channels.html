@@ -50,7 +50,11 @@
         {% for log in logs %}
             {% if loop.index0 < config.get("NUM_TOP_CHANNELS_PER_USER", 10) %}
                 <tr>
-                    <td>{{ log.channel }}</td>
+                    <td>
+                        <a href="{{ url_for('.get_log', user=user.name, channel=log.channel, date=log.date) }}">
+                            {{ log.channel }}
+                        </a>
+                    </td>
                     <td>{{ modified_time(today, log.modified_time) }}</td>
                 </tr>
             {% else %}

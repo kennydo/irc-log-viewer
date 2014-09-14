@@ -137,7 +137,10 @@ def list_channels():
 def get_log(user, channel, date):
     """Get a specific log."""
     znc_user = get_znc_user_or_404(user)
-    date = parse_log_date(date)
+    date = datetime.datetime.strptime(
+        date,
+        "%Y-%m-%d",
+    ).date()
 
     email = get_session_user_email()
     if not email_can_read_channel_logs(email, znc_user.name, channel):
