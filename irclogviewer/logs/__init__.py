@@ -1,5 +1,6 @@
 import calendar
-from flask import abort, Blueprint, render_template, session, url_for
+import datetime
+from flask import abort, Blueprint, render_template, request, session
 from .authorization import email_can_read_channel_logs
 from .dates import sorted_unique_year_months, parse_log_date
 from .filters import filters_mapping
@@ -40,20 +41,24 @@ def init_znc_directory(setup_state):
 
 
 @logs.route('/')
-def list_users():
-    return render_template('users.html')
+def index():
+    return render_template('index.html')
 
 
-def show_calendar_of_logs(logs, date_url_function, title):
+@logs.route('/calendar')
+def show_calendar():
+    """Shows the month calendars for each viewable log
     """
-
-    :param logs: IRC logs
-    :type logs: list of :class:`~irclogviewer.logs.znc.ZncLog`
-    :param date_url_function: 1 arity function called on each
-        :class:`~datetime.date` in the calendar
-    :param str title: desired page title
-    """
-    log_dates = set(log.date for log in logs)
+    log_dates = set()
+    for znc_user in znc_directory.users.values():
+        log_dates.update(
+            log.date for log in znc_user.logs.all()
+            if email_can_read_channel_logs(
+                get_session_user_email(),
+                znc_user.name,
+                log.channel,
+            )
+        )
     year_month_tuples = sorted_unique_year_months(log_dates)
     cal = calendar.Calendar(firstweekday=calendar.SUNDAY)
 
@@ -63,126 +68,68 @@ def show_calendar_of_logs(logs, date_url_function, title):
 
     return render_template(
         'calendar.html',
-        title=title,
         calendar=cal,
         log_dates=log_dates,
         most_recent_log_date=most_recent_log_date,
         year_month_tuples=year_month_tuples,
-        date_url_function=date_url_function,
     )
 
 
-@logs.route('/users/<user>/dates')
-def list_user_dates(user):
-    """List all of the dates that contain logs for this ``user``"""
-    znc_user = get_znc_user_or_404(user)
-    logs = [
-        log for log in znc_user.logs.all()
-        if email_can_read_channel_logs(
-            get_session_user_email(),
-            znc_user.name,
-            log.channel,
-        )
-    ]
+@logs.route('/channels')
+def list_channels():
+    """List all of the channels that each :class:`irclogviewer.logs.znc.ZncUser`
+    has logs for.
+    """
+    # latest_logs maps from ZncUser -> str channel name -> latest ZncLog
+    latest_logs = {}
 
-    def date_url_function(d):
-        """Link to the channels that have logs for the given
-        :class:`~datetime.date` ``d``.
-        """
-        return url_for(
-            '.list_date_channels',
-            user=user,
-            date=d.strftime("%Y%m%d")
-        )
+    session_user_email = get_session_user_email()
 
-    return show_calendar_of_logs(
-        logs,
-        date_url_function,
-        "{0} Logs".format(user),
-    )
+    specific_date = request.args.get('date', None)
+    if 'date' in request.args:
+        if request.args['date'].lower() == "today":
+            specific_date = datetime.date.today()
+        else:
+            specific_date = datetime.datetime.strptime(
+                request.args['date'],
+                "%Y-%m-%d",
+            ).date()
+        log_generator = lambda zuser: zuser.logs.filter(date=specific_date)
+    else:
+        log_generator = lambda zuser: zuser.logs.all()
 
+    for znc_user in znc_directory.users.values():
+        latest_logs[znc_user] = {}
+        filtered_logs = [
+            log for log in log_generator(znc_user)
+            if email_can_read_channel_logs(session_user_email,
+                                           znc_user.name,
+                                           log.channel)
+        ]
 
-@logs.route('/users/<user>/dates/<date>')
-def list_date_channels(user, date):
-    """List all of the channels that have logs on this ``date``."""
-    znc_user = get_znc_user_or_404(user)
-    date = parse_log_date(date)
-    channels = set(
-        log.channel for log in znc_user.logs.filter(date=date)
-        if email_can_read_channel_logs(
-            get_session_user_email(),
-            znc_user.name,
-            log.channel,
-        )
-    )
+        for log in filtered_logs:
+            if log.channel in latest_logs[znc_user]:
+                current_latest_log = latest_logs[znc_user][log.channel]
+                if log.modified_time > current_latest_log.modified_time:
+                    latest_logs[znc_user][log.channel] = log
+            else:
+                latest_logs[znc_user][log.channel] = log
 
-    def channel_url_function(channel):
-        """Now that we know the date and channel, go right to the log."""
-        return url_for(
-            '.get_log',
-            user=user,
-            date=date.strftime("%Y%m%d"),
-            channel=channel
-        )
+    # maps from ZncUser -> list of ZncLog, ordered by modified_time (desc)
+    sorted_latest_logs = {}
+    for znc_user, latest_log_by_channel in latest_logs.items():
+        sorted_latest_logs[znc_user] = [
+            znc_log
+            for channel_name, znc_log
+            in sorted(latest_log_by_channel.items(),
+                      key=lambda item: item[1],
+                      reverse=True)
+        ]
 
     return render_template(
         'channels.html',
-        title='Channels for {0} on {1}'.format(user, date),
-        user=user,
-        date=date,
-        channels=channels,
-        channel_url_function=channel_url_function,
-    )
-
-
-@logs.route('/users/<user>/channels')
-def list_user_channels(user):
-    """List all of the channels that this ``user`` has logs for."""
-    znc_user = get_znc_user_or_404(user)
-    channels = set(
-        log.channel for log in znc_user.logs.all()
-        if email_can_read_channel_logs(
-            get_session_user_email(),
-            znc_user.name,
-            log.channel,
-        )
-    )
-
-    def channel_url_function(channel):
-        return url_for('.list_channel_dates', user=user, channel=channel)
-
-    return render_template(
-        'channels.html',
-        title='Channels for {0}'.format(user),
-        user=user,
-        channels=channels,
-        channel_url_function=channel_url_function,
-    )
-
-
-@logs.route('/users/<user>/channels/<channel>')
-def list_channel_dates(user, channel):
-    """List all of the dates that this user was logging ``channel``."""
-    znc_user = get_znc_user_or_404(user)
-    logs = [
-        log for log in znc_user.logs.filter(channel=channel)
-        if email_can_read_channel_logs(
-            get_session_user_email(),
-            znc_user.name,
-            log.channel,
-        )
-    ]
-
-    def date_url_function(d):
-        return url_for('.get_log',
-                       user=user,
-                       channel=channel,
-                       date=d.strftime("%Y%m%d"))
-
-    return show_calendar_of_logs(
-        logs,
-        date_url_function,
-        "{0} Logs".format(user),
+        latest_logs=sorted_latest_logs,
+        specific_date=specific_date,
     )
 
 
@@ -190,7 +137,10 @@ def list_channel_dates(user, channel):
 def get_log(user, channel, date):
     """Get a specific log."""
     znc_user = get_znc_user_or_404(user)
-    date = parse_log_date(date)
+    date = datetime.datetime.strptime(
+        date,
+        "%Y-%m-%d",
+    ).date()
 
     email = get_session_user_email()
     if not email_can_read_channel_logs(email, znc_user.name, channel):

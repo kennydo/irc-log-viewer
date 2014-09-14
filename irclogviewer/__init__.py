@@ -1,3 +1,4 @@
+import datetime
 import os
 from flask import Flask, redirect, session, url_for
 from irclogviewer.auth import auth as auth_blueprint
@@ -16,6 +17,11 @@ def inject_session_user():
     return dict(session_user=session.get('user'))
 
 
+@app.context_processor
+def inject_today():
+    return dict(today=datetime.date.today())
+
+
 @app.route('/')
 def index():
-    return redirect(url_for('logs.list_users'))
+    return redirect(url_for('logs.index'))

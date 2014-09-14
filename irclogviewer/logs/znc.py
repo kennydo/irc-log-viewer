@@ -50,6 +50,28 @@ class ZncUser(object):
     def __repr__(self):
         return '<ZncUser user_path={user_path}>'.format(**self.__dict__)
 
+    # We sort ZncUser objects by user name only
+    def __lt__(self, other):
+        return self.name < other.name
+
+    def __le__(self, other):
+        return self.name <= other.name
+
+    def __eq__(self, other):
+        return self.name == other.name
+
+    def __ne__(self, other):
+        return self.name != other.name
+
+    def __gt__(self, other):
+        return self.name > other.name
+
+    def __ge__(self, other):
+        return self.name >= other.name
+
+    def __hash__(self):
+        return sum(ord(c) for c in self.name)
+
 
 class ZncUserMapping(Mapping):
     """Provide a dictionary-like way to access ZNC users."""

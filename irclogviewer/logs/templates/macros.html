@@ -1,4 +1,4 @@
-{% macro calendar_month(calendar, year, month, log_dates, date_url_function) %}
+{% macro calendar_month(calendar, year, month, log_dates) %}
 <table class="pure-table pure-table-bordered log-table">
     <caption>{{ month | to_month_name }} {{ year }}</caption>
     <thead>
@@ -18,7 +18,7 @@
     {%- for date in week %}
         {%- if date.month == month %}
             {% if date in log_dates -%}
-                <td><a href="{{ date_url_function(date) }}" class="pure-button pure-button-primary">{{ date.day }}</a></td>
+                <td><a href="{{ url_for('.list_channels', date=date) }}" class="pure-button pure-button-primary">{{ date.day }}</a></td>
             {%- else -%}
                 <td><a href="#" class="pure-button pure-button-disabled">{{ date.day }}</a></td>
             {%- endif %}
@@ -35,4 +35,14 @@
     <p>
         No logs found. You might not have permission to view logs.
     </p>
+{%- endmacro %}
+
+{% macro modified_time(today, datetime) %}
+    {% if datetime.date() == today %}
+        {{ datetime.strftime("%H:%M Today") }}
+    {% elif datetime.year == today.year and datetime.month == today.month %}
+        {{ datetime.strftime("%a, %b %d") }}
+    {% else %}
+        {{ datetime.strftime("%b %d, %Y") }}
+    {% endif %}
 {%- endmacro %}
