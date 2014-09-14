@@ -1,6 +1,16 @@
 {% extends "layout.html" %}
 {% from "macros.html" import no_logs_found, modified_time %}
 
+{% if specific_date %}
+    {% set title="Channels on " + specific_date.strftime("%a, %b %d, %Y") %}
+    {% set date_before_this_day = specific_date|date_before %}
+    {% if specific_date != today %}
+        {% set date_after_this_day = specific_date|date_after %}
+    {% endif %}
+{% else %}
+    {% set title="All Channels" %}
+{% endif %}
+
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
@@ -8,7 +18,25 @@
     <h1>{{ title }}</h1>
 </div>
 
+{% if specific_date %}
+<div class="pure-u-1">
+    {% if date_before_this_day %}
+        <a href="{{ url_for('.list_channels', date=date_before_this_day) }}" class="pure-button pure-button-primary">
+            <i class="fa fa-chevron-left"></i>
+            Earlier
+        </a>
+    {% endif %}
+    {% if date_after_this_day %}
+        <a href="{{ url_for('.list_channels', date=date_after_this_day) }}" class="pure-button pure-button-primary">
+            Later
+            <i class="fa fa-chevron-right"></i>
+        </a>
+    {% endif %}
+</div>
+{% endif %}
+
 {% for user, logs in latest_logs|dictsort %}
+    {% if logs %}
 <div class="pure-u-1">
     <h2>{{ user.name }}</h2>
 
@@ -20,7 +48,7 @@
         </tr>
         </thead>
         {% for log in logs %}
-            {% if loop.index0 < num_channels_per_user %}
+            {% if loop.index0 < config.get("NUM_TOP_CHANNELS_PER_USER", 10) %}
                 <tr>
                     <td>{{ log.channel }}</td>
                     <td>{{ modified_time(today, log.modified_time) }}</td>
@@ -31,15 +59,10 @@
                     <td>{{ modified_time(today, log.modified_time) }}</td>
                 </tr>
             {% endif %}
-        {% else %}
-            <tr>
-                <td colspan="2">
-                    {{ no_logs_found() }}
-                </td>
-            </tr>
         {% endfor %}
     </table>
 </div>
+    {% endif %}
 {% else %}
 <div class="pure-u-1">
     {{ no_logs_found() }}

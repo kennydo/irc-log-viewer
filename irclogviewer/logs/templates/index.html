@@ -8,11 +8,11 @@
 </div>
 
 <div class="pure-u-1">
-    <a href="#" class="pure-button pure-button-primary">
+    <a href="{{ url_for('.list_channels', date='today') }}" class="pure-button pure-button-primary">
         <i class="fa fa-bolt"></i>
-        Latest Logs
+        Today's Logs
     </a>
-    <a href="#" class="pure-button pure-button-primary">
+    <a href="{{ url_for('.show_calendar') }}" class="pure-button pure-button-primary">
         <i class="fa fa-calendar"></i>
         Calendar
     </a>

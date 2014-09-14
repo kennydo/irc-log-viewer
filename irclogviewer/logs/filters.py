@@ -1,4 +1,5 @@
 import calendar
+import datetime
 from functools import lru_cache, wraps
 import re
 
@@ -59,3 +60,13 @@ def irc_nick_to_color_id(nick):
     colors = [2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13]
     ascii_sum = sum(ord(char) for char in nick)
     return colors[ascii_sum % len(colors)]
+
+
+@register_jinja_filter
+def date_before(date):
+    return date - datetime.timedelta(days=1)
+
+
+@register_jinja_filter
+def date_after(date):
+    return date + datetime.timedelta(days=1)
