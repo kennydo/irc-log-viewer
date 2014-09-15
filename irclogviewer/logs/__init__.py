@@ -146,16 +146,35 @@ def get_log(user, channel, date):
     if not email_can_read_channel_logs(email, znc_user.name, channel):
         abort(403)
 
-    log = znc_user.logs.get(date=date, channel=channel)
+    logs = znc_user.logs.filter(channel=channel)
+
+    for i_index, i_log in enumerate(logs):
+        if i_log.date == date:
+            log = i_log
+            break
+    else:
+        log = None
+
     if not log:
         abort(404)
+
+    if i_index > 0:
+        earlier_log = logs[i_index - 1]
+    else:
+        earlier_log = None
+
+    if (i_index + 1) < len(logs):
+        later_log = logs[i_index + 1]
+    else:
+        later_log = None
 
     with open(log.log_path, 'r', encoding='utf-8') as f:
         irc_lines = [parse_irc_line(line) for line in f]
     return render_template(
         'log.html',
-        user=user,
-        channel=channel,
-        date=date,
+        znc_user=znc_user,
+        earlier_log=earlier_log,
+        later_log=later_log,
+        log=log,
         irc_lines=irc_lines,
     )
