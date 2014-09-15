@@ -168,7 +168,7 @@ def get_log(user, channel, date):
     else:
         later_log = None
 
-    with open(log.log_path, 'r', encoding='utf-8') as f:
+    with open(log.log_path, 'r', encoding='utf-8', errors='ignore') as f:
         irc_lines = [parse_irc_line(line) for line in f]
     return render_template(
         'log.html',
