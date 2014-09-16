@@ -27,7 +27,7 @@ def get_session_user_email():
     return session.get('user', {}).get('email', None)
 
 
-@logs.record_once
+@logs.before_app_first_request
 def init_znc_directory(setup_state):
     global znc_directory
     app = setup_state.app
