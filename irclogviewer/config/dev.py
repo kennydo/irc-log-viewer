@@ -5,6 +5,8 @@ Flask's config only uses the uppercase variables, and gunicorn has a
 limited set of (lowercase) variables to configure, so there will never
 be a name conflict.
 """
+import sys
+import os
 # gunicorn config
 bind = "127.0.0.1:25252"
 workers = 4
@@ -13,6 +15,10 @@ workers = 4
 GOOGLE_CONSUMER_KEY = "REPLACE ME"
 GOOGLE_CONSUMER_SECRET = "REPLACE ME"
 SECRET_KEY = "Change this to an actually secret value"
+
+CRAWLER_PID_FILE = os.path.join(sys.prefix, "crawler.pid")
+SQLALCHEMY_DATABASE_URI = "sqlite:///{0}".format(os.path.join(sys.prefix, "znc.db"))
+
 DEBUG = True
 ZNC_DIRECTORY = '/replace/me/here/.znc'
 

@@ -1,11 +1,13 @@
 import calendar
 import datetime
+
 from flask import abort, Blueprint, render_template, request, session
-from .authorization import email_can_read_channel_logs
-from .dates import sorted_unique_year_months, parse_log_date
-from .filters import filters_mapping
-from .irc_parser import parse_irc_line
-from .znc import ZncDirectory
+
+from irclogviewer.logs.authorization import email_can_read_channel_logs
+from irclogviewer.logs.dates import sorted_unique_year_months, parse_log_date
+from irclogviewer.logs.filters import filters_mapping
+from irclogviewer.logs.irc_parser import parse_irc_line
+from irclogviewer.znc import ZncDirectory
 
 
 logs = Blueprint('logs', __name__, template_folder='templates')
