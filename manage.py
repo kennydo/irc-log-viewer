@@ -8,10 +8,11 @@ a single file because gunicorn only has lowercase configuration variables and
 flask only has uppercase configuration variables.
 """
 import argparse
-import subprocess
 import os
+import pipes
 import psutil
 import signal
+import subprocess
 import sys
 
 
@@ -93,7 +94,7 @@ def command_start(args):
     # file variable names.
     cmd = [
         path_to_bin("gunicorn"),
-        "{0}:app".format(APP_NAME),
+        "{0}:create_app()".format(APP_NAME),
         "--bind", config["bind"],
         "--config", args.config,
         "--pid", config["pidfile"],
@@ -102,7 +103,7 @@ def command_start(args):
     ]
 
     print("Running the following command")
-    print(" ".join(cmd))
+    print(" ".join(pipes.quote(c) for c in cmd))
     subprocess.Popen(cmd, env={
         "FLASK_SETTINGS": args.config,
     })

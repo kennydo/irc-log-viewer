@@ -18,7 +18,7 @@ google = oauth.remote_app(
 )
 
 
-@auth.before_app_first_request
+@auth.record_once
 def init_google(state):
     oauth.init_app(state.app)
 

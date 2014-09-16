@@ -4,41 +4,21 @@ import datetime
 from flask import abort, Blueprint, render_template, request, session
 
 from irclogviewer.logs.authorization import email_can_read_channel_logs
-from irclogviewer.logs.dates import sorted_unique_year_months, parse_log_date
+from irclogviewer.logs.dates import parse_log_date
 from irclogviewer.logs.filters import filters_mapping
 from irclogviewer.logs.irc_parser import parse_irc_line
-from irclogviewer.znc import ZncDirectory
 
 
 logs = Blueprint('logs', __name__, template_folder='templates')
-znc_directory = None
-
-
-def inject_znc_users():
-    users = [user for user in znc_directory.users.keys()]
-    return dict(znc_users=users)
-
-
-def get_znc_user_or_404(user):
-    if user not in znc_directory.users:
-        abort(404)
-    return znc_directory.users[user]
 
 
 def get_session_user_email():
     return session.get('user', {}).get('email', None)
 
 
-@logs.before_app_first_request
+@logs.record_once
 def init_znc_directory(setup_state):
-    global znc_directory
     app = setup_state.app
-
-    if 'ZNC_DIRECTORY' in app.config:
-        znc_directory = ZncDirectory(app.config.get('ZNC_DIRECTORY'))
-    else:
-        raise ValueError("ZNC_DIRECTORY was not set in flask config")
-    app.context_processor(inject_znc_users)
     app.jinja_env.filters.update(**filters_mapping)
 
 
@@ -61,6 +41,7 @@ def show_calendar():
                 log.channel,
             )
         )
+
     year_month_tuples = sorted_unique_year_months(log_dates)
     cal = calendar.Calendar(firstweekday=calendar.SUNDAY)
 
