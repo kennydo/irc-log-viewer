@@ -17,7 +17,8 @@ GOOGLE_CONSUMER_SECRET = "REPLACE ME"
 SECRET_KEY = "Change this to an actually secret value"
 
 CRAWLER_PID_FILE = os.path.join(sys.prefix, "crawler.pid")
-SQLALCHEMY_DATABASE_URI = "sqlite:///{0}".format(os.path.join(sys.prefix, "znc.db"))
+SQLALCHEMY_DATABASE_URI = "sqlite:///{0}".format(os.path.join(sys.prefix,
+                                                              "znc.db"))
 
 DEBUG = True
 ZNC_DIRECTORY = '/replace/me/here/.znc'

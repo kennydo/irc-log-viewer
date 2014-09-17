@@ -1,4 +1,5 @@
 from sqlalchemy.orm import composite
+
 from irclogviewer import db
 
 
@@ -29,6 +30,8 @@ class IrcLog(db.Model):
     user = db.Column(db.String(128), primary_key=True, nullable=False)
     channel = db.Column(db.String(128), primary_key=True, nullable=False)
     date = db.Column(db.Date(), primary_key=True, nullable=False)
+
+    path = db.Column(db.String(256), nullable=False)
     last_modified = db.Column(db.DateTime(), nullable=False)
 
     user_channel = composite(IrcUserChannel, user, channel)
@@ -38,8 +41,8 @@ class IrcLog(db.Model):
             '<IrcLog user="{user}" channel="{channel}" date={date} '
             'last_modified={last_modified}>'
         ).format(
-               user=self.user,
-               channel=self.channel,
-               date=self.date,
-               last_modified=self.last_modified,
+            user=self.user,
+            channel=self.channel,
+            date=self.date,
+            last_modified=self.last_modified,
         )

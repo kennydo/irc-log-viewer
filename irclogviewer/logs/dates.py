@@ -5,14 +5,14 @@ import datetime
 YearMonth = namedtuple('YearMonth', ['year', 'month'])
 
 
-def sorted_unique_year_months(date_set):
+def sorted_unique_year_months(dates):
     """Get a sorted list (ascending) of the unique (year, month) tuples that
     appear in ``date_set``.
-    :type date_set: set of :class:`datetime.date`
+    :type dates: iterable of :class:`datetime.date`
     :rtype: list of :class:`YearMonth`
     """
     year_months = set()
-    for d in date_set:
+    for d in dates:
         year_months.add(YearMonth(d.year, d.month))
 
     return sorted(year_months)

@@ -2,8 +2,10 @@ import atexit
 import logging
 import sys
 import os
+
 import psutil
-from irclogviewer import app, db
+
+from irclogviewer import create_app, db
 from irclogviewer.models import IrcLog
 from irclogviewer.znc import ZncDirectory
 
@@ -15,12 +17,16 @@ def atexit_remove_pid_file(pid_file):
     def handler():
         if os.path.isfile(pid_file):
             logger.error(
-                "Exit handler had to removed PID file {0}".format(pid_file)
+                "Exit handler had to remove PID file {0}".format(pid_file)
             )
             os.remove(pid_file)
     return handler
 
+
 def main():
+    app = create_app()
+    ctx = app.test_request_context()
+    ctx.push()
     pid_file = app.config['CRAWLER_PID_FILE']
 
     if os.path.isfile(pid_file):
@@ -55,6 +61,7 @@ def main():
             irc_log = IrcLog(user=user_directory.name,
                              channel=log_file.channel,
                              date=log_file.date,
+                             path=log_file.log_path,
                              last_modified=log_file.modified_time)
             db.session.add(irc_log)
         db.session.commit()

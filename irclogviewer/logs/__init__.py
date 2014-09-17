@@ -3,7 +3,7 @@ import datetime
 
 from flask import abort, Blueprint, render_template, request, session
 
-from irclogviewer.models import db, IrcUserChannel, IrcLog
+from irclogviewer.models import db, IrcLog
 from irclogviewer.logs.authorization import email_can_read_channel_logs
 from irclogviewer.logs.dates import parse_log_date, sorted_unique_year_months
 from irclogviewer.logs.filters import filters_mapping
@@ -75,7 +75,7 @@ def list_channels():
 
     query = db.session.query(IrcLog)
     if specific_date:
-        query = query.filter(IrcLog.date==specific_date)
+        query = query.filter(IrcLog.date == specific_date)
     query = query.group_by(IrcLog.user_channel)\
                  .order_by(IrcLog.user.asc(),
                            IrcLog.date.desc(),
@@ -102,43 +102,42 @@ def list_channels():
 @logs.route('/users/<user>/channels/<channel>/<date>')
 def get_log(user, channel, date):
     """Get a specific log."""
-    znc_user = get_znc_user_or_404(user)
     date = datetime.datetime.strptime(
         date,
         "%Y-%m-%d",
     ).date()
 
     email = get_session_user_email()
-    if not email_can_read_channel_logs(email, znc_user.name, channel):
+    if not email_can_read_channel_logs(email, user, channel):
         abort(403)
 
-    logs = znc_user.logs.filter(channel=channel)
-
-    for i_index, i_log in enumerate(logs):
-        if i_log.date == date:
-            log = i_log
-            break
-    else:
-        log = None
-
+    log = db.session.query(IrcLog)\
+                    .filter(IrcLog.user == user,
+                            IrcLog.channel == channel,
+                            IrcLog.date == date)\
+                    .first()
     if not log:
         abort(404)
 
-    if i_index > 0:
-        earlier_log = logs[i_index - 1]
-    else:
-        earlier_log = None
+    earlier_log = db.session.query(IrcLog)\
+                            .filter(IrcLog.user == user,
+                                    IrcLog.channel == channel,
+                                    IrcLog.date < date)\
+                            .order_by(IrcLog.date.desc())\
+                            .first()
 
-    if (i_index + 1) < len(logs):
-        later_log = logs[i_index + 1]
-    else:
-        later_log = None
+    later_log = db.session.query(IrcLog)\
+                          .filter(IrcLog.user == user,
+                                  IrcLog.channel == channel,
+                                  IrcLog.date > date)\
+                          .order_by(IrcLog.date.asc())\
+                          .first()
 
-    with open(log.log_path, 'r', encoding='utf-8', errors='ignore') as f:
+    with open(log.path, 'r', encoding='utf-8', errors='ignore') as f:
         irc_lines = [parse_irc_line(line) for line in f]
     return render_template(
         'log.html',
-        znc_user=znc_user,
+        user=user,
         earlier_log=earlier_log,
         later_log=later_log,
         log=log,

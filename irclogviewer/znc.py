@@ -4,7 +4,9 @@ from functools import total_ordering
 import logging
 import re
 import os
+
 from irclogviewer.logs.dates import parse_log_date
+
 
 LOG_FILENAME_PATTERN = re.compile(
     '(?P<channel>.+)_(?P<date>\d{4}\d{2}\d{2}).log'

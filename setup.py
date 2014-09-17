@@ -14,7 +14,7 @@ setup(
 
     packages=find_packages(),
 
-    entry_points = {
+    entry_points={
         'console_scripts': [
             'crawl-irc-logs = irclogviewer.crawler:main'
         ]
