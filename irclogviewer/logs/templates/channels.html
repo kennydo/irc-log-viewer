@@ -55,12 +55,12 @@
                             {{ log.channel }}
                         </a>
                     </td>
-                    <td>{{ modified_time(today, log.modified_time) }}</td>
+                    <td>{{ modified_time(today, log.last_modified) }}</td>
                 </tr>
             {% else %}
                 <tr style="display: none;">
                     <td>{{ log.channel }}</td>
-                    <td>{{ modified_time(today, log.modified_time) }}</td>
+                    <td>{{ modified_time(today, log.last_modified) }}</td>
                 </tr>
             {% endif %}
         {% endfor %}

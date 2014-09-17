@@ -72,41 +72,29 @@ def list_channels():
                 request.args['date'],
                 "%Y-%m-%d",
             ).date()
-        log_generator = lambda zuser: zuser.logs.filter(date=specific_date)
-    else:
-        log_generator = lambda zuser: zuser.logs.all()
 
-    for znc_user in znc_directory.users.values():
-        latest_logs[znc_user] = {}
-        filtered_logs = [
-            log for log in log_generator(znc_user)
-            if email_can_read_channel_logs(session_user_email,
-                                           znc_user.name,
-                                           log.channel)
-        ]
+    query = db.session.query(IrcLog)
+    if specific_date:
+        query = query.filter(IrcLog.date==specific_date)
+    query = query.group_by(IrcLog.user_channel)\
+                 .order_by(IrcLog.user.asc(),
+                           IrcLog.date.desc(),
+                           IrcLog.last_modified.desc(),
+                           IrcLog.channel.asc())
 
-        for log in filtered_logs:
-            if log.channel in latest_logs[znc_user]:
-                current_latest_log = latest_logs[znc_user][log.channel]
-                if log.modified_time > current_latest_log.modified_time:
-                    latest_logs[znc_user][log.channel] = log
-            else:
-                latest_logs[znc_user][log.channel] = log
+    for log in query.all():
+        if not email_can_read_channel_logs(session_user_email,
+                                           log.user,
+                                           log.channel):
+            continue
+        if log.user not in latest_logs:
+            latest_logs[log.user] = []
 
-    # maps from ZncUser -> list of ZncLog, ordered by modified_time (desc)
-    sorted_latest_logs = {}
-    for znc_user, latest_log_by_channel in latest_logs.items():
-        sorted_latest_logs[znc_user] = [
-            znc_log
-            for channel_name, znc_log
-            in sorted(latest_log_by_channel.items(),
-                      key=lambda item: item[1],
-                      reverse=True)
-        ]
+        latest_logs[log.user].append(log)
 
     return render_template(
         'channels.html',
-        latest_logs=sorted_latest_logs,
+        latest_logs=latest_logs,
         specific_date=specific_date,
     )
 
