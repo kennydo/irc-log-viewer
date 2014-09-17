@@ -3,8 +3,9 @@ import datetime
 
 from flask import abort, Blueprint, render_template, request, session
 
+from irclogviewer.models import db, IrcUserChannel, IrcLog
 from irclogviewer.logs.authorization import email_can_read_channel_logs
-from irclogviewer.logs.dates import parse_log_date
+from irclogviewer.logs.dates import parse_log_date, sorted_unique_year_months
 from irclogviewer.logs.filters import filters_mapping
 from irclogviewer.logs.irc_parser import parse_irc_line
 
@@ -31,16 +32,10 @@ def index():
 def show_calendar():
     """Shows the month calendars for each viewable log
     """
-    log_dates = set()
-    for znc_user in znc_directory.users.values():
-        log_dates.update(
-            log.date for log in znc_user.logs.all()
-            if email_can_read_channel_logs(
-                get_session_user_email(),
-                znc_user.name,
-                log.channel,
-            )
-        )
+    query = db.session.query(IrcLog.date.distinct())\
+                      .order_by(IrcLog.date)\
+                      .all()
+    log_dates = [row[0] for row in query]
 
     year_month_tuples = sorted_unique_year_months(log_dates)
     cal = calendar.Calendar(firstweekday=calendar.SUNDAY)
