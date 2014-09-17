@@ -32,3 +32,14 @@ class IrcLog(db.Model):
     last_modified = db.Column(db.DateTime(), nullable=False)
 
     user_channel = composite(IrcUserChannel, user, channel)
+
+    def __repr__(self):
+        return (
+            '<IrcLog user="{user}" channel="{channel}" date={date} '
+            'last_modified={last_modified}>'
+        ).format(
+               user=self.user,
+               channel=self.channel,
+               date=self.date,
+               last_modified=self.last_modified,
+        )
