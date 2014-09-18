@@ -5,7 +5,7 @@ import logging
 import re
 import os
 
-from irclogviewer.logs.dates import parse_log_date
+from irclogviewer.logs.dates import parse_undashed_date
 
 
 LOG_FILENAME_PATTERN = re.compile(
@@ -132,7 +132,7 @@ class ZncLogFile(object):
         groups = match.groupdict()
 
         channel = groups['channel']
-        date = parse_log_date(groups['date'])
+        date = parse_undashed_date(groups['date'])
 
         return cls(log_path, channel, date)
 

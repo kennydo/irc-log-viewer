@@ -5,7 +5,11 @@ from flask import abort, Blueprint, render_template, request, session
 
 from irclogviewer.models import db, IrcLog
 from irclogviewer.logs.authorization import email_can_read_channel_logs
-from irclogviewer.logs.dates import parse_log_date, sorted_unique_year_months
+from irclogviewer.logs.dates import (
+    parse_dashed_date,
+    parse_undashed_date,
+    sorted_unique_year_months,
+)
 from irclogviewer.logs.filters import filters_mapping
 from irclogviewer.logs.irc_parser import parse_irc_line
 
@@ -18,7 +22,7 @@ def get_session_user_email():
 
 
 @logs.record_once
-def init_znc_directory(setup_state):
+def inject_filters(setup_state):
     app = setup_state.app
     app.jinja_env.filters.update(**filters_mapping)
 
@@ -30,7 +34,7 @@ def index():
 
 @logs.route('/calendar')
 def show_calendar():
-    """Shows the month calendars for each viewable log
+    """Shows the month calendars for each log
     """
     query = db.session.query(IrcLog.date.distinct())\
                       .order_by(IrcLog.date)\
@@ -68,10 +72,7 @@ def list_channels():
         if request.args['date'].lower() == "today":
             specific_date = datetime.date.today()
         else:
-            specific_date = datetime.datetime.strptime(
-                request.args['date'],
-                "%Y-%m-%d",
-            ).date()
+            specific_date = parse_dashed_date(request.args['date'])
 
     query = db.session.query(IrcLog)
     if specific_date:
@@ -102,10 +103,7 @@ def list_channels():
 @logs.route('/users/<user>/channels/<channel>/<date>')
 def get_log(user, channel, date):
     """Get a specific log."""
-    date = datetime.datetime.strptime(
-        date,
-        "%Y-%m-%d",
-    ).date()
+    date = parse_dashed_date(date)
 
     email = get_session_user_email()
     if not email_can_read_channel_logs(email, user, channel):
