@@ -171,6 +171,7 @@ def command_crawl(args):
     if err_data:
         print(err_data.decode("utf-8"), file=sys.stderr)
 
+
 def add_config_argument(parser, required=False):
     """Add the ``--config`` argument to the given ``parser``."""
     parser.add_argument(

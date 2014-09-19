@@ -47,6 +47,7 @@ def parse_date(raw_date):
     else:
         return parse_undashed_date(raw_date)
 
+
 def parse_undashed_date(raw_date):
     """Parse the YYYYMMDD date format that ZNC uses.
 
