@@ -166,8 +166,10 @@ def command_crawl(args):
     )
     out_data, err_data = popen.communicate()
 
-    print(out_data.decode("utf-8"), file=sys.stdout)
-    print(err_data.decode("utf-8"), file=sys.stderr)
+    if out_data:
+        print(out_data.decode("utf-8"), file=sys.stdout)
+    if err_data:
+        print(err_data.decode("utf-8"), file=sys.stderr)
 
 def add_config_argument(parser, required=False):
     """Add the ``--config`` argument to the given ``parser``."""
