@@ -63,7 +63,6 @@ def main():
                              date=log_file.date,
                              path=log_file.log_path,
                              last_modified=log_file.modified_time)
-            print(irc_log)
             db.session.add(irc_log)
         db.session.commit()
 
