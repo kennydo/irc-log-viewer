@@ -1,8 +1,23 @@
 from collections import namedtuple
 import datetime
-
+from werkzeug.routing import BaseConverter, ValidationError
 
 YearMonth = namedtuple('YearMonth', ['year', 'month'])
+
+
+class DateConverter(BaseConverter):
+    def to_python(self, value):
+        if value == 'today':
+            return datetime.date.today()
+
+        try:
+            date = parse_dashed_date(value)
+        except ValueError as e:
+            raise ValidationError(str(e))
+        return date
+
+    def to_url(self, value):
+        return value.strftime("%Y-%m-%d")
 
 
 def sorted_unique_year_months(dates):
@@ -17,6 +32,20 @@ def sorted_unique_year_months(dates):
 
     return sorted(year_months)
 
+
+def parse_date(raw_date):
+    """General-purpose date parser. Can handle YYYY-MM-DD, YYYYMMDD, or
+    the string "today".
+
+    :param str raw_date: a date
+    :return: a :class:`datetime.date` object
+    """
+    if '-' in raw_date:
+        return parse_dashed_date(raw_date)
+    elif raw_date == 'today':
+        return datetime.date.today()
+    else:
+        return parse_undashed_date(raw_date)
 
 def parse_undashed_date(raw_date):
     """Parse the YYYYMMDD date format that ZNC uses.

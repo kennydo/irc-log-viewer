@@ -1,12 +1,11 @@
 import calendar
-import datetime
 
 from flask import abort, Blueprint, render_template, request, session
 
 from irclogviewer.models import db, IrcLog
 from irclogviewer.logs.authorization import email_can_read_channel_logs
-from irclogviewer.logs.dates import (
-    parse_dashed_date,
+from irclogviewer.dates import (
+    parse_date,
     sorted_unique_year_months,
 )
 from irclogviewer.logs.filters import filters_mapping
@@ -66,12 +65,10 @@ def list_channels():
 
     session_user_email = get_session_user_email()
 
-    specific_date = request.args.get('date', None)
     if 'date' in request.args:
-        if request.args['date'].lower() == "today":
-            specific_date = datetime.date.today()
-        else:
-            specific_date = parse_dashed_date(request.args['date'])
+        specific_date = parse_date(request.args['date'])
+    else:
+        specific_date = None
 
     query = db.session.query(IrcLog)
     if specific_date:
@@ -99,11 +96,9 @@ def list_channels():
     )
 
 
-@logs.route('/users/<user>/channels/<channel>/<date>')
+@logs.route('/users/<user>/channels/<channel>/<date:date>')
 def get_log(user, channel, date):
     """Get a specific log."""
-    date = parse_dashed_date(date)
-
     email = get_session_user_email()
     if not email_can_read_channel_logs(email, user, channel):
         abort(403)
