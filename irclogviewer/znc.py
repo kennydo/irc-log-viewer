@@ -5,7 +5,7 @@ import logging
 import re
 import os
 
-from irclogviewer.logs.dates import parse_undashed_date
+from irclogviewer.dates import parse_undashed_date
 
 
 LOG_FILENAME_PATTERN = re.compile(
