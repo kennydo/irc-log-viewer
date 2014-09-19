@@ -38,7 +38,7 @@
 {% for user, logs in latest_logs|dictsort %}
     {% if logs %}
 <div class="pure-u-1">
-    <h2>{{ user.name }}</h2>
+    <h2>{{ user }}</h2>
 
     <table>
         <thead>
@@ -51,16 +51,16 @@
             {% if loop.index0 < config.get("NUM_TOP_CHANNELS_PER_USER", 10) %}
                 <tr>
                     <td>
-                        <a href="{{ url_for('.get_log', user=user.name, channel=log.channel, date=log.date) }}">
+                        <a href="{{ url_for('.get_log', user=user, channel=log.channel, date=log.date) }}">
                             {{ log.channel }}
                         </a>
                     </td>
-                    <td>{{ modified_time(today, log.modified_time) }}</td>
+                    <td>{{ modified_time(today, log.last_modified) }}</td>
                 </tr>
             {% else %}
                 <tr style="display: none;">
                     <td>{{ log.channel }}</td>
-                    <td>{{ modified_time(today, log.modified_time) }}</td>
+                    <td>{{ modified_time(today, log.last_modified) }}</td>
                 </tr>
             {% endif %}
         {% endfor %}

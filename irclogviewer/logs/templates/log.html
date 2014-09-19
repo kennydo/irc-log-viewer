@@ -3,7 +3,7 @@
 {% block title %}{{ log.channel }} on {{ log.date }}{% endblock %}
 
 {% macro refresh_button() %}
-     <a href="{{ url_for('.get_log', user=znc_user.name, channel=log.channel, date=log.date) }}" class="pure-button pure-button-primary">
+     <a href="{{ url_for('.get_log', user=user, channel=log.channel, date=log.date) }}" class="pure-button pure-button-primary">
         <i class="fa fa-refresh"></i>
         Refresh
     </a>
@@ -17,13 +17,13 @@
 
 <div class="pure-u-1">
     {% if earlier_log %}
-        <a href="{{ url_for('.get_log', user=znc_user.name, channel=log.channel, date=earlier_log.date) }}" class="pure-button pure-button-primary">
+        <a href="{{ url_for('.get_log', user=user, channel=log.channel, date=earlier_log.date) }}" class="pure-button pure-button-primary">
             <i class="fa fa-chevron-left"></i>
             Earlier ({{ earlier_log.date }})
         </a>
     {% endif %}
     {% if later_log %}
-        <a href="{{ url_for('.get_log', user=znc_user.name, channel=log.channel, date=later_log.date) }}" class="pure-button pure-button-primary">
+        <a href="{{ url_for('.get_log', user=user, channel=log.channel, date=later_log.date) }}" class="pure-button pure-button-primary">
             Later ({{ later_log.date }})
             <i class="fa fa-chevron-right"></i>
         </a>

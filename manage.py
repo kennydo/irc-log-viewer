@@ -8,10 +8,11 @@ a single file because gunicorn only has lowercase configuration variables and
 flask only has uppercase configuration variables.
 """
 import argparse
-import subprocess
 import os
+import pipes
 import psutil
 import signal
+import subprocess
 import sys
 
 
@@ -93,7 +94,7 @@ def command_start(args):
     # file variable names.
     cmd = [
         path_to_bin("gunicorn"),
-        "{0}:app".format(APP_NAME),
+        "{0}:create_app()".format(APP_NAME),
         "--bind", config["bind"],
         "--config", args.config,
         "--pid", config["pidfile"],
@@ -102,7 +103,7 @@ def command_start(args):
     ]
 
     print("Running the following command")
-    print(" ".join(cmd))
+    print(" ".join(pipes.quote(c) for c in cmd))
     subprocess.Popen(cmd, env={
         "FLASK_SETTINGS": args.config,
     })
@@ -147,6 +148,27 @@ def command_restart(args):
     command_start(args)
 
 
+def command_crawl(args):
+    """Crawl the IRC log directory"""
+    # We don't actually need "--config" in the command args.
+    # I just like seeing it in `ps` so I can see where the config file is.
+    cmd = [
+        path_to_bin("crawl-irc-logs"),
+        '--config', args.config,
+    ]
+    popen = subprocess.Popen(
+        cmd,
+        env={
+            "FLASK_SETTINGS": args.config,
+        },
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    out_data, err_data = popen.communicate()
+
+    print(out_data.decode("utf-8"), file=sys.stdout)
+    print(err_data.decode("utf-8"), file=sys.stderr)
+
 def add_config_argument(parser, required=False):
     """Add the ``--config`` argument to the given ``parser``."""
     parser.add_argument(
@@ -176,6 +198,10 @@ if __name__ == "__main__":
     restart_parser = subparsers.add_parser("restart", help="Restart the app")
     add_config_argument(restart_parser, required=True)
     restart_parser.set_defaults(func=command_restart)
+
+    crawl_parser = subparsers.add_parser("crawl", help="Crawl the IRC logs")
+    add_config_argument(crawl_parser, required=True)
+    crawl_parser.set_defaults(func=command_crawl)
 
     parsed_args = parser.parse_args()
     parsed_args.func(parsed_args)
