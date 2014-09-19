@@ -7,7 +7,6 @@ from irclogviewer.models import db, IrcLog
 from irclogviewer.logs.authorization import email_can_read_channel_logs
 from irclogviewer.logs.dates import (
     parse_dashed_date,
-    parse_undashed_date,
     sorted_unique_year_months,
 )
 from irclogviewer.logs.filters import filters_mapping
