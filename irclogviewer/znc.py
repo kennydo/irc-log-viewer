@@ -4,7 +4,9 @@ from functools import total_ordering
 import logging
 import re
 import os
-from .dates import parse_log_date
+
+from irclogviewer.logs.dates import parse_undashed_date
+
 
 LOG_FILENAME_PATTERN = re.compile(
     '(?P<channel>.+)_(?P<date>\d{4}\d{2}\d{2}).log'
@@ -35,7 +37,7 @@ class ZncDirectory(object):
         return '<ZncDirectory znc_path={znc_path}>'.format(**self.__dict__)
 
 
-class ZncUser(object):
+class ZncUserDirectory(object):
     """Representation of a single ZNC user."""
 
     def __init__(self, user_path):
@@ -98,7 +100,7 @@ class ZncUserMapping(Mapping):
                 'No user directory found for user "{0}" in path {1}'.format(
                     user, self.users_path)
             )
-        return ZncUser(user_directory)
+        return ZncUserDirectory(user_directory)
 
     def __iter__(self):
         for user in os.listdir(self.users_path):
@@ -110,7 +112,7 @@ class ZncUserMapping(Mapping):
 
 
 @total_ordering
-class ZncLog(object):
+class ZncLogFile(object):
     """Representation of a single ZNC log file."""
 
     @classmethod
@@ -119,7 +121,7 @@ class ZncLog(object):
 
         :param str log_path: path to a possible log file
         :raises ValueError: if the filename in ``log_path`` is not recognized
-        :rtype: ZncLog
+        :rtype: ZncLogFile
         """
         filename = os.path.basename(log_path)
         match = LOG_FILENAME_PATTERN.match(filename)
@@ -130,7 +132,7 @@ class ZncLog(object):
         groups = match.groupdict()
 
         channel = groups['channel']
-        date = parse_log_date(groups['date'])
+        date = parse_undashed_date(groups['date'])
 
         return cls(log_path, channel, date)
 
@@ -204,7 +206,7 @@ class ZncLogManager(object):
 
         for filename in os.listdir(self.logs_path):
             try:
-                znc_log = ZncLog.from_path(
+                znc_log = ZncLogFile.from_path(
                     os.path.join(self.logs_path, filename))
             except ValueError as e:
                 log.exception("Invalid filename in log directory: " + str(e))
@@ -221,7 +223,7 @@ class ZncLogManager(object):
         :param str channel: (optional) channel you are interested in
         :raises ValueError: if neither ``date`` nor ``channel`` arguments were
             defined
-        :rtype: list of :class:`ZncLog`
+        :rtype: list of :class:`ZncLogFile`
         :returns: a sorted list of :class:`ZncLog` objects meeting the criteria
         """
         if date and channel:
@@ -242,7 +244,7 @@ class ZncLogManager(object):
         :param datetime.date date: date you are interested in
         :param str channel: channel you are interested in
         :return: the desired log object, if it exists, or None
-        :rtype: :class:`ZncLog` or None
+        :rtype: :class:`ZncLogFile` or None
         """
         if not date or not channel:
             raise ValueError("Neither date nor channel were specified")

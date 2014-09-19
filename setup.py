@@ -13,4 +13,10 @@ setup(
     license='3-clause BSD',
 
     packages=find_packages(),
+
+    entry_points={
+        'console_scripts': [
+            'crawl-irc-logs = irclogviewer.crawler:main'
+        ]
+    }
 )
