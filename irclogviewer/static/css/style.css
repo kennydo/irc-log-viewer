@@ -188,10 +188,27 @@ h2{
 /*
  * Log styling
  */
+.log{
+    font-family: monospace;
+    font-size: 1.1em;
+    padding: 0 0.1em;
+}
 .irc-line{
     display: block;
+    overflow: auto;
 }
-
+.irc-timestamp a {
+    text-decoration: none;
+}
+.irc-timestamp a,
+.irc-timestamp a:visited {
+    color: rgba(1, 1, 1, 0.7);
+}
+.irc-timestamp a:focus,
+.irc-timestamp a:active,
+.irc-timestamp a:hover {
+    color: rgb(255, 102, 39);
+}
 .irc-line-join .irc-message{
     color: green;
     font-weight: bold;
@@ -199,14 +216,7 @@ h2{
 .irc-line-part .irc-message, .irc-line-quit .irc-message{
     color: #66361F;
 }
-
-.irc-timestamp{font-color: red;}
-.irc-timestamp::before{content: '[';}
-.irc-timestamp::after{content: ']';}
 .irc-nick{font-weight: bold;}
-.irc-nick::before{content: '<';}
-.irc-nick::after{content: '>';}
-
 .irc-bold{font-weight: bold;}
 .irc-underline{text-decoration: underline;}
 
