@@ -22,17 +22,18 @@ h2{
     margin: 0 auto;
 }
 .temporal-navigation{
+    display: block;
     margin: 0.5em 0;
 }
 .temporal-navigation a{
+    display: inline-block;
     background: white;
     border: 2px solid rgb(255, 102, 39);
     padding: 0.5em 1.5em;
     text-decoration: none;
     color: inherit;
 }
-.temporal-navigation a.earlier{
-    float: left;
+.temporal-navigation a{
     margin-left: 0.5em;
 }
 .temporal-navigation a.later{
@@ -40,7 +41,7 @@ h2{
     margin-right: 0.5em;
 }
 @media screen and (min-width: 960px){
-    .temporal-navigation a.earlier{
+    .temporal-navigation a{
         margin-left: 0;
     }
     .temporal-navigation a.later{
@@ -133,28 +134,50 @@ h2{
 }
 
 /*
- * Log styling
+ * Calendar styling
  */
 
-.log-table{
-    margin: 0.5em 0 1.5em 0;
+.calendar-table{
+    margin: 0.5em 0 1.5em 0.5em;
 }
-.log-table caption{
+.calendar-table caption{
     font-size: 1.2em;
-    padding: 0.25em 0;
+    text-align: center;
+    font-weight: lighter;
+    padding: 0 0.2em;
+    margin: 0.2em 0;
+    color: rgba(1, 1, 1, 0.9);
+    font-style: normal;
 }
-.log-table td{
+.calendar-table td{
     padding: 2px;
     text-align: center;
+    border: 0;
 }
-.log-table .wrong-month{
+.calendar-table .wrong-month{
     color: rgba(0, 0, 0, 0.3);
 }
-.log-table a{
+.calendar-table a{
     display: block;
     padding: 0.25em 0.5em;
+    border: 2px solid rgb(255, 102, 39);
+}
+.calendar-table a.disabled{
+    cursor: not-allowed;
+    opacity: 0.4;
+    border: 2px solid rgb(203, 203, 203);
+}
+.calendar-table a,
+.calendar-table a:visited,
+.calendar-table a:focus,
+.calendar-table a:active {
+    text-decoration: none;
+    color: inherit;
 }
 
+/*
+ * Log styling
+ */
 .irc-line{
     display: block;
 }

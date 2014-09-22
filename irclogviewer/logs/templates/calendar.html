@@ -4,27 +4,26 @@
 {% block title %}Log Calendar{% endblock %}
 
 {% block content %}
-<div class="pure-u-1">
+<div class="pure-u-1" id="content">
     <h1>Log Calendar</h1>
-</div>
 
-{% if most_recent_log_date %}
-<div class="pure-u-1">
-    <a href="{{ url_for('.list_channels', date=most_recent_log_date) }}" class="pure-button pure-button-primary">Most Recent ({{ most_recent_log_date }})</a>
-</div>
-{% endif %}
-
-{% if log_dates %}
-<div class="pure-u-1">
-{% for year, month in year_month_tuples|reverse %}
-    <div class="pure-u-1 pure-u-sm-1 pure-u-md-11-24 pure-u-lg-9-24 pure-u-xl-7-24">
-        {{ calendar_month(calendar, year, month, log_dates) }}
+    {% if most_recent_log_date %}
+    <div class="temporal-navigation">
+        <a href="{{ url_for('.list_channels', date=most_recent_log_date) }}">Most Recent ({{ most_recent_log_date }})</a>
     </div>
-{% endfor %}
+    {% endif %}
+
+    {% if log_dates %}
+    {% for year, month in year_month_tuples|reverse %}
+        <div class="pure-u-1 pure-u-sm-1 pure-u-md-11-24 pure-u-lg-9-24">
+            <h2>{{ month | to_month_name }} {{ year }}</h2>
+            {{ calendar_month(calendar, year, month, log_dates) }}
+        </div>
+    {% endfor %}
+    {% else %}
+    <div class="pure-u-1">
+    {{ no_logs_found() }}
+    </div>
+    {% endif %}
 </div>
-{% else %}
-<div class="pure-u-1">
-{{ no_logs_found() }}
-</div>
-{% endif %}
 {% endblock %}
