@@ -14,13 +14,13 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-<div class="content">
-    <div class="pure-u-1">
+<div class="content pure-u-1">
+    <div class="">
         <h1>{{ title }}</h1>
     </div>
 
     {% if specific_date %}
-    <div class="pure-u-1 temporal-navigation">
+    <div class="temporal-navigation">
         {% if date_before_this_day %}
             <a href="{{ url_for('.list_channels', date=date_before_this_day) }}" class="earlier">
                 <i class="fa fa-chevron-left"></i>
@@ -38,7 +38,7 @@
 
     {% for user, logs in latest_logs|dictsort %}
         {% if logs %}
-    <div class="pure-u-1">
+    <div>
         <h2>{{ user }}</h2>
 
         <table class="channel-table">
@@ -65,7 +65,7 @@
     </div>
         {% endif %}
     {% else %}
-    <div class="pure-u-1">
+    <div>
         {{ no_logs_found() }}
     </div>
 </div>
