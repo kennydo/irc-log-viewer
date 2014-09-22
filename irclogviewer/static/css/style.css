@@ -1,3 +1,62 @@
+body{
+    background-color: #fff;
+}
+h1 {
+    text-align: center;
+    font-weight: lighter;
+    background: rgb(255, 102, 39);
+    color: white;
+}
+h2{
+    text-align: center;
+    font-weight: lighter;
+    padding: 0 0.2em;
+    margin: 0 0 0.1em 0;
+    color: rgba(1, 1, 1, 0.9);
+}
+.content {
+    max-width: 960px;
+    margin: 0 auto;
+    background: #fff;
+}
+.channel-table{
+    width: 100%;
+    margin: 0 0 2em 0;
+}
+.channel-table .channel-row, .channel-table thead tr{
+    border-bottom: 1px solid rgb(204, 204, 204);
+}
+.channel-table .channel-name-header, .channel-table .modified-time-header{
+    font-weight: heavy;
+    text-align: left;
+    font-weight: normal;
+    text-transform: uppercase;
+    font-size: 0.8em;
+    padding-bottom: 5px;
+    color: rgb(100, 100, 100);
+}
+.channel-table .channel-name-header, .channel-table .channel-name{
+    width: 70%;
+    padding-left: 5px;
+}
+.channel-table .modified-time-header, .channel-table .modified-time-header{
+    width: 30%;
+}
+.channel-table .channel-name, .channel-table .modified-time{
+    padding-top: 0.4em;
+    padding-bottom: 0.4em;
+}
+.channel-table a, .channel-table a:visited, .channel-table .modified-time{
+    color: rgba(1, 1, 1, 0.8);
+    text-decoration: none;
+}
+.channel-table .channel-row:hover{
+    background: rgba(1, 1, 1, 0.05);
+}
+.channel-table a:hover, .channel-table a:active{
+    color: rgb(255, 102, 39);
+    border-bottom: 1px solid rgb(255, 102, 39);
+}
 .log-table{
     margin: 0.5em 0 1.5em 0;
 }
