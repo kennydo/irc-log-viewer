@@ -167,7 +167,7 @@ h2{
 @media screen and (min-width: 960px){
     .calendar{
         display: inline-block;
-        margin: 0.5em 3em 1.5em 3em;
+        margin: 0.5em 3.95em 1.5em 3.95em;
     }
 }
 .calendar-table{
