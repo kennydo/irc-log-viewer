@@ -83,14 +83,11 @@ h2{
 }
 @media screen and (min-width: 960px){
     #index-buttons a{
-        display: inline-block;
-        width: 32.55%;
-    }
-    #index-buttons i.fa{
-        font-size: 3em;
-        display: block;
+        margin-left: 0;
+        margin-right: 0;
     }
 }
+
 /*
  * Channel-listing styling
  */
