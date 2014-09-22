@@ -54,15 +54,17 @@ h2{
 #index-buttons{
     margin-top: 0.5em;
 }
-#index-buttons a, #index-buttons a:visited, #index-buttons a:active{
-    border: 2px solid rgb(255, 102, 39);
+#index-buttons a{
     display: block;
     text-align: center;
     margin: 0 0.5em 0.5em 0.5em;
     padding: 0.5em;
     text-align: left;
-    text-decoration: none;
+}
+#index-buttons a, #index-buttons a:visited, #index-buttons a:active{
     color: rgba(1, 1, 1, 0.8);
+    text-decoration: none;
+    border: 2px solid rgb(255, 102, 39);
 }
 #index-buttons a:hover{
     background: rgb(255, 102, 39);
