@@ -1,6 +1,5 @@
 {% macro calendar_month(calendar, year, month, log_dates) %}
-<table class="pure-table pure-table-bordered log-table">
-    <caption>{{ month | to_month_name }} {{ year }}</caption>
+<table class="pure-table pure-table-bordered calendar-table">
     <thead>
         <tr>
             <th>日</th>
@@ -18,9 +17,9 @@
     {%- for date in week %}
         {%- if date.month == month %}
             {% if date in log_dates -%}
-                <td><a href="{{ url_for('.list_channels', date=date) }}" class="pure-button pure-button-primary">{{ date.day }}</a></td>
+                <td><a href="{{ url_for('.list_channels', date=date) }}">{{ date.day }}</a></td>
             {%- else -%}
-                <td><a href="#" class="pure-button pure-button-disabled">{{ date.day }}</a></td>
+                <td><a href="#" class="disabled">{{ date.day }}</a></td>
             {%- endif %}
         {%- else %}
             <td class="wrong-month">{{ date.day }}</td>

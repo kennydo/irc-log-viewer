@@ -1,26 +1,237 @@
-.log-table{
-    margin: 0.5em 0 1.5em 0;
+body{
+    background-color: #fff;
 }
-.log-table caption{
-    font-size: 1.2em;
-    padding: 0.25em 0;
+h1 {
+    text-align: center;
+    font-weight: lighter;
+    background: rgb(255, 102, 39);
+    color: white;
+    margin: 0;
+    padding: 0.2em 0;
+    overflow: auto;
 }
-.log-table td{
-    padding: 2px;
+h2{
+    text-align: center;
+    font-weight: lighter;
+    padding: 0 0.2em;
+    margin: 0.2em 0;
+    color: rgba(1, 1, 1, 0.9);
+}
+#content{
+    max-width: 960px;
+    display: block;
+    margin: 0 auto;
+}
+.temporal-navigation{
+    display: block;
+    margin: 0.5em 0;
+}
+.temporal-navigation a{
+    display: inline-block;
+    background: white;
+    border: 2px solid rgb(255, 102, 39);
+    padding: 0.5em 1.5em;
+    text-decoration: none;
+    color: inherit;
+}
+.temporal-navigation a{
+    margin-left: 0.5em;
+}
+.temporal-navigation a.later{
+    float: right;
+    margin-right: 0.5em;
+}
+@media screen and (min-width: 960px){
+    .temporal-navigation a{
+        margin-left: 0;
+    }
+    .temporal-navigation a.later{
+        margin-right: 0;
+    }
+}
+
+/*
+ * Header styling
+ */
+#header{
+    max-width: 960px;
+    margin: 0 auto;
+    background: rgba(0, 0, 0, 0.8);
+
+}
+#header .pure-menu-heading:hover,
+#header a{
+    color: #fff;
+}
+#header a:hover{
+    color: #000;
+}
+#header .pure-menu-heading img{
+    width: 1.5em;
+    height: 1.5em;
+    vertical-align: middle;
+}
+
+/*
+ * Index page styling
+ */
+#index-buttons{
+    margin-top: 0.5em;
+}
+#index-buttons a{
+    display: block;
+    text-align: center;
+    margin: 0 0.5em 0.5em 0.5em;
+    padding: 0.5em;
+    text-align: left;
+}
+#index-buttons a, #index-buttons a:visited, #index-buttons a:active{
+    color: rgba(1, 1, 1, 0.8);
+    text-decoration: none;
+    border: 2px solid rgb(255, 102, 39);
+}
+#index-buttons a:hover{
+    background: rgb(255, 102, 39);
+    color: white;
+}
+#index-buttons i.fa{
+    font-size: 3em;
+    display: inline-block;
+    width: 1em;
+    height: 1em;
     text-align: center;
 }
-.log-table .wrong-month{
+#index-buttons span{
+    display: inline-block;
+    vertical-align: 0.35em;
+    margin-left: 0.25em;
+    font-size: 1.5em;
+}
+@media screen and (min-width: 960px){
+    #index-buttons a{
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
+/*
+ * Channel-listing styling
+ */
+.channel-table{
+    width: 100%;
+    margin: 0 0 2em 0;
+}
+.channel-table .channel-row, .channel-table thead tr{
+    border-bottom: 1px solid rgb(204, 204, 204);
+}
+.channel-table .channel-name-header, .channel-table .modified-time-header{
+    font-weight: heavy;
+    text-align: left;
+    font-weight: normal;
+    text-transform: uppercase;
+    font-size: 0.8em;
+    padding-bottom: 5px;
+    color: rgb(100, 100, 100);
+}
+.channel-table .channel-name-header, .channel-table .channel-name{
+    width: 70%;
+    padding-left: 5px;
+}
+.channel-table .modified-time-header, .channel-table .modified-time-header{
+    width: 30%;
+}
+.channel-table .channel-name, .channel-table .modified-time{
+    padding-top: 0.4em;
+    padding-bottom: 0.4em;
+}
+.channel-table a, .channel-table a:visited, .channel-table .modified-time{
+    color: rgba(1, 1, 1, 0.8);
+    text-decoration: none;
+}
+.channel-table .channel-row:hover{
+    background: rgba(1, 1, 1, 0.05);
+}
+.channel-table a:hover, .channel-table a:active{
+    color: rgb(255, 102, 39);
+    border-bottom: 1px solid rgb(255, 102, 39);
+}
+
+/*
+ * Calendar styling
+ */
+.calendar{
+    max-width: 360px;
+    display: block;
+    margin: 0.5em auto 1.5em 0.5em;
+}
+@media screen and (min-width: 960px){
+    .calendar{
+        display: inline-block;
+        margin: 0.5em 3.95em 1.5em 3.95em;
+    }
+}
+.calendar-table{
+    margin: 0;
+}
+.calendar-table caption{
+    font-size: 1.2em;
+    text-align: center;
+    font-weight: lighter;
+    padding: 0 0.2em;
+    margin: 0.2em 0;
+    color: rgba(1, 1, 1, 0.9);
+    font-style: normal;
+}
+.calendar-table td{
+    padding: 2px;
+    text-align: center;
+    border: 0;
+}
+.calendar-table .wrong-month{
     color: rgba(0, 0, 0, 0.3);
 }
-.log-table a{
+.calendar-table a{
     display: block;
     padding: 0.25em 0.5em;
+    border: 2px solid rgb(255, 102, 39);
+}
+.calendar-table a.disabled{
+    cursor: not-allowed;
+    opacity: 0.4;
+    border: 2px solid rgb(203, 203, 203);
+}
+.calendar-table a,
+.calendar-table a:visited,
+.calendar-table a:focus,
+.calendar-table a:active {
+    text-decoration: none;
+    color: inherit;
 }
 
+/*
+ * Log styling
+ */
+.log{
+    font-family: monospace;
+    font-size: 1.1em;
+    padding: 0 0.1em;
+}
 .irc-line{
     display: block;
+    overflow: auto;
 }
-
+.irc-timestamp a {
+    text-decoration: none;
+}
+.irc-timestamp a,
+.irc-timestamp a:visited {
+    color: rgba(1, 1, 1, 0.7);
+}
+.irc-timestamp a:focus,
+.irc-timestamp a:active,
+.irc-timestamp a:hover {
+    color: rgb(255, 102, 39);
+}
 .irc-line-join .irc-message{
     color: green;
     font-weight: bold;
@@ -28,14 +239,7 @@
 .irc-line-part .irc-message, .irc-line-quit .irc-message{
     color: #66361F;
 }
-
-.irc-timestamp{font-color: red;}
-.irc-timestamp::before{content: '[';}
-.irc-timestamp::after{content: ']';}
 .irc-nick{font-weight: bold;}
-.irc-nick::before{content: '<';}
-.irc-nick::after{content: '>';}
-
 .irc-bold{font-weight: bold;}
 .irc-underline{text-decoration: underline;}
 

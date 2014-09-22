@@ -3,69 +3,65 @@
 {% block title %}{{ log.channel }} on {{ log.date }}{% endblock %}
 
 {% macro refresh_button() %}
-     <a href="{{ url_for('.get_log', user=user, channel=log.channel, date=log.date) }}" class="pure-button pure-button-primary">
+     <a href="{{ url_for('.get_log', user=user, channel=log.channel, date=log.date) }}">
         <i class="fa fa-refresh"></i>
         Refresh
     </a>
 {% endmacro %}
 
 {% block content %}
-<div class="pure-u-1">
+<div id="content">
     <a name="top"></a>
-    <h1>{{ log.channel }} on {{ log.date }}</h1>
-</div>
+    <h1>{{log.user}} <br />{{ log.channel }} <br /> {{ log.date }}</h1>
 
-<div class="pure-u-1">
-    {% if earlier_log %}
-        <a href="{{ url_for('.get_log', user=user, channel=log.channel, date=earlier_log.date) }}" class="pure-button pure-button-primary">
-            <i class="fa fa-chevron-left"></i>
-            Earlier ({{ earlier_log.date }})
-        </a>
-    {% endif %}
-    {% if later_log %}
-        <a href="{{ url_for('.get_log', user=user, channel=log.channel, date=later_log.date) }}" class="pure-button pure-button-primary">
-            Later ({{ later_log.date }})
-            <i class="fa fa-chevron-right"></i>
-        </a>
-    {% endif %}
-</div>
+    <div class="temporal-navigation">
+        {% if earlier_log %}
+            <a href="{{ url_for('.get_log', user=user, channel=log.channel, date=earlier_log.date) }}" class="earlier">
+                <i class="fa fa-chevron-left"></i>
+                Earlier
+            </a>
+        {% endif %}
+        {% if later_log %}
+            <a href="{{ url_for('.get_log', user=user, channel=log.channel, date=later_log.date) }}" class="later">
+                Later
+                <i class="fa fa-chevron-right"></i>
+            </a>
+        {% endif %}
+    </div>
 
-<div class="pure-u-1">
-    <a href="#bottom" class="pure-button pure-button-primary">
-        <i class="fa fa-arrow-down"></i>
-        Bottom
-    </a>
-    {{ refresh_button() }}
-</div>
-
-<div class="pure-u-1">
-{% for irc_line in irc_lines %}
-<span class="irc-line {% if irc_line.type != 'message' %}irc-line-{{irc_line.type}}{% endif %}">
-    <span class="irc-timestamp">
-        <a href="#line-{{ loop.index }}" id="line-{{ loop.index }}">
-        {{ irc_line.timestamp }}
+    <div class="temporal-navigation">
+        <a href="#bottom">
+            <i class="fa fa-arrow-down"></i>
+            Bottom
         </a>
-    </span>
-    {% if irc_line.nick %}
-    <span class="irc-nick irc-fg-{{ irc_line.nick|irc_nick_to_color_id }}">{{ irc_line.nick }}</span>
-    {% endif %}
-    <span class="irc-message">
-        {% for fragment in irc_line.message_fragments %}
-        <span class="irc-fragment {{ fragment.state |  irc_line_state_to_css_classes | join(' ') }}">
-            {{ fragment.text | plain_urls_to_links }}
+        {{ refresh_button() }}
+    </div>
+
+    <div class="log">
+        {% for irc_line in irc_lines %}
+        <span class="irc-line {% if irc_line.type != 'message' %}irc-line-{{irc_line.type}}{% endif %}">
+            <span class="irc-timestamp">[<a href="#line-{{ loop.index }}" id="line-{{ loop.index }}">{{ irc_line.timestamp }}</a>]</span>
+            {% if irc_line.nick %}
+            <span class="irc-nick irc-fg-{{ irc_line.nick|irc_nick_to_color_id }}">&lt;{{ irc_line.nick }}&gt;</span>
+            {% endif %}
+            <span class="irc-message">
+                {% for fragment in irc_line.message_fragments %}
+                <span class="irc-fragment {{ fragment.state |  irc_line_state_to_css_classes | join(' ') }}">
+                    {{ fragment.text | plain_urls_to_links }}
+                </span>
+                {% endfor %}
+            </span>
         </span>
         {% endfor %}
-    </span>
-</span>
-{% endfor %}
-<a name="bottom"></a>
-</div>
+        <a name="bottom"></a>
+    </div>
 
-<div class="pure-u-1">
-    <a href="#top" class="pure-button pure-button-primary">
-        <i class="fa fa-arrow-up"></i>
-        Top
-    </a>
-    {{ refresh_button() }}
+    <div class="temporal-navigation">
+        <a href="#top">
+            <i class="fa fa-arrow-up"></i>
+            Top
+        </a>
+        {{ refresh_button() }}
+    </div>
 </div>
 {% endblock %}
