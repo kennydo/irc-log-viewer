@@ -10,12 +10,12 @@
 {% endmacro %}
 
 {% block content %}
-<div class="pure-u-1">
+<div>
     <a name="top"></a>
     <h1>{{ log.channel }} on {{ log.date }}</h1>
 </div>
 
-<div class="pure-u-1">
+<div>
     {% if earlier_log %}
         <a href="{{ url_for('.get_log', user=user, channel=log.channel, date=earlier_log.date) }}" class="pure-button pure-button-primary">
             <i class="fa fa-chevron-left"></i>
@@ -30,7 +30,7 @@
     {% endif %}
 </div>
 
-<div class="pure-u-1">
+<div>
     <a href="#bottom" class="pure-button pure-button-primary">
         <i class="fa fa-arrow-down"></i>
         Bottom
@@ -38,7 +38,7 @@
     {{ refresh_button() }}
 </div>
 
-<div class="pure-u-1">
+<div>
 {% for irc_line in irc_lines %}
 <span class="irc-line {% if irc_line.type != 'message' %}irc-line-{{irc_line.type}}{% endif %}">
     <span class="irc-timestamp">
@@ -61,7 +61,7 @@
 <a name="bottom"></a>
 </div>
 
-<div class="pure-u-1">
+<div>
     <a href="#top" class="pure-button pure-button-primary">
         <i class="fa fa-arrow-up"></i>
         Top

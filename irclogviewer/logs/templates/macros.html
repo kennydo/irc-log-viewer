@@ -17,7 +17,7 @@
     {%- for date in week %}
         {%- if date.month == month %}
             {% if date in log_dates -%}
-                <td><a href="{{ url_for('.list_channels', date=date) }}"">{{ date.day }}</a></td>
+                <td><a href="{{ url_for('.list_channels', date=date) }}">{{ date.day }}</a></td>
             {%- else -%}
                 <td><a href="#" class="disabled">{{ date.day }}</a></td>
             {%- endif %}
