@@ -9,7 +9,7 @@
 
     {% if most_recent_log_date %}
     <div class="temporal-navigation">
-        <a href="{{ url_for('.list_channels', date=most_recent_log_date) }}">Most Recent ({{ most_recent_log_date }})</a>
+        <a href="{{ url_for('.list_channels', date=most_recent_log_date) }}">Latest: {{ most_recent_log_date.strftime("%a, %b %d, %Y") }}</a>
     </div>
     {% endif %}
 

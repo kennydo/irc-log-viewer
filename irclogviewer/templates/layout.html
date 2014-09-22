@@ -10,13 +10,14 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div class="pure-menu pure-menu-open pure-menu-horizontal">
+    <div class="pure-menu pure-menu-open pure-menu-horizontal" id="header">
         {% if session_user is not none %}
             <a href="{{ url_for('logs.index') }}" class="pure-menu-heading">
-                <img src="{{ session_user.picture }}" alt="profile picture" style="width: 1.6em; vertical-align: middle;" />
-                {{ session_user.given_name }}'s Logs
+                <img src="{{ session_user.picture }}" alt="profile picture" />
+                Home
             </a>
             <ul>
+                <li><a href="{{ url_for('logs.show_calendar') }}">Calendar</a></li>
                 <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
             </ul>
         {% else %}

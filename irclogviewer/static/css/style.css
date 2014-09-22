@@ -8,6 +8,7 @@ h1 {
     color: white;
     margin: 0;
     padding: 0.2em 0;
+    overflow: auto;
 }
 h2{
     text-align: center;
@@ -47,6 +48,28 @@ h2{
     .temporal-navigation a.later{
         margin-right: 0;
     }
+}
+
+/*
+ * Header styling
+ */
+#header{
+    max-width: 960px;
+    margin: 0 auto;
+    background: rgba(0, 0, 0, 0.8);
+
+}
+#header .pure-menu-heading:hover,
+#header a{
+    color: #fff;
+}
+#header a:hover{
+    color: #000;
+}
+#header .pure-menu-heading img{
+    width: 1.5em;
+    height: 1.5em;
+    vertical-align: middle;
 }
 
 /*
