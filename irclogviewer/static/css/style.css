@@ -136,9 +136,19 @@ h2{
 /*
  * Calendar styling
  */
-
+.calendar{
+    max-width: 360px;
+    display: block;
+    margin: 0.5em auto 1.5em 0.5em;
+}
+@media screen and (min-width: 960px){
+    .calendar{
+        display: inline-block;
+        margin: 0.5em 3em 1.5em 3em;
+    }
+}
 .calendar-table{
-    margin: 0.5em 0 1.5em 0.5em;
+    margin: 0;
 }
 .calendar-table caption{
     font-size: 1.2em;
