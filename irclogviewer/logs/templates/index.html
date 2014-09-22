@@ -1,24 +1,24 @@
 {% extends "layout.html" %}
 
-{% block title %}ZNC Logs{% endblock %}
+{% block title %}IRC Logs{% endblock %}
 
 {% block content %}
-<div class="pure-u-1">
-    <h1>ZNC Logs</h1>
-</div>
+<div id="content">
+    <h1>IRC Logs</h1>
 
-<div class="pure-u-1">
-    <a href="{{ url_for('.list_channels', date='today') }}" class="pure-button pure-button-primary">
-        <i class="fa fa-bolt"></i>
-        Today's Logs
-    </a>
-    <a href="{{ url_for('.show_calendar') }}" class="pure-button pure-button-primary">
-        <i class="fa fa-calendar"></i>
-        Calendar
-    </a>
-    <a href="{{ url_for('.list_channels') }}" class="pure-button pure-button-primary">
-        <i class="fa fa-list"></i>
-        Channels
-    </a>
+    <div id="index-buttons">
+        <a href="{{ url_for('.list_channels', date='today') }}">
+            <i class="fa fa-bolt"></i>
+            <span>Today's Logs</span>
+        </a>
+        <a href="{{ url_for('.show_calendar') }}">
+            <i class="fa fa-calendar"></i>
+            <span>Calendar</span>
+        </a>
+        <a href="{{ url_for('.list_channels') }}">
+            <i class="fa fa-list"></i>
+            <span>Channels</span>
+        </a>
+    </div>
 </div>
 {% endblock %}

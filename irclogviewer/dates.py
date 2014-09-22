@@ -7,6 +7,11 @@ YearMonth = namedtuple('YearMonth', ['year', 'month'])
 
 class DateConverter(BaseConverter):
     def to_python(self, value):
+        """Convert a date-ish :class:`str` to a :class:`~datetime.date` object.
+
+        :param str value: a date-like string
+        :return: a :class:`datetime.date` object
+        """
         if value == 'today':
             return datetime.date.today()
 
@@ -17,6 +22,12 @@ class DateConverter(BaseConverter):
         return date
 
     def to_url(self, value):
+        """Make a dashed date string.
+
+        :param value: a date
+        :type value: :class:`datetime.date`
+        :return: a dashed string in the YYYY-MM-DD format
+        """
         return value.strftime("%Y-%m-%d")
 
 
@@ -46,6 +57,7 @@ def parse_date(raw_date):
         return datetime.date.today()
     else:
         return parse_undashed_date(raw_date)
+
 
 def parse_undashed_date(raw_date):
     """Parse the YYYYMMDD date format that ZNC uses.

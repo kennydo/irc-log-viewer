@@ -7,33 +7,29 @@
     <link rel="icon" sizes="192x192" href="{{ url_for('static', filename='images/man_on_log.png') }}">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/pure-min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/grids-responsive-min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-<div class="pure-g">
-    <div class="pure-u-1">
-        <div class="pure-menu pure-menu-open pure-menu-horizontal">
-            {% if session_user is not none %}
-                <a href="{{ url_for('logs.index') }}" class="pure-menu-heading">
-                    <img src="{{ session_user.picture }}" alt="profile picture" style="width: 1.6em; vertical-align: middle;" />
-                    {{ session_user.given_name }}'s Logs
-                </a>
-                <ul>
-                    <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
-                </ul>
-            {% else %}
-                <a href="{{ url_for('logs.index') }}" class="pure-menu-heading">
-                    Public Logs
-                </a>
-                <ul>
-                    <li><a href="{{ url_for('auth.login') }}">Login</a></li>
-                </ul>
-            {% endif %}
-        </div>
+    <div class="pure-menu pure-menu-open pure-menu-horizontal" id="header">
+        {% if session_user is not none %}
+            <a href="{{ url_for('logs.index') }}" class="pure-menu-heading">
+                <img src="{{ session_user.picture }}" alt="profile picture" />
+                Home
+            </a>
+            <ul>
+                <li><a href="{{ url_for('logs.show_calendar') }}">Calendar</a></li>
+                <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+            </ul>
+        {% else %}
+            <a href="{{ url_for('logs.index') }}" class="pure-menu-heading">
+                Public Logs
+            </a>
+            <ul>
+                <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+            </ul>
+        {% endif %}
     </div>
 {% block content %}
 {% endblock -%}
-</div>
 </body>
 </html>
