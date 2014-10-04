@@ -17,6 +17,17 @@ h2{
     margin: 0.2em 0;
     color: rgba(1, 1, 1, 0.9);
 }
+h1 a,
+h1 a:link,
+h1 a:hover,
+h1 a:visited{
+    display: inline-block;
+    text-decoration: none;
+    color: inherit;
+    margin-top: 0.1em;
+    padding: 0 0.1em;
+    background: rgba(0, 0, 0, 0.3);
+}
 #content{
     max-width: 960px;
     display: block;
