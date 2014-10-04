@@ -25,7 +25,8 @@
                 Public Logs
             </a>
             <ul>
-                <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+                <li><a href="{{ url_for('logs.show_calendar') }}">Calendar</a></li>
+                <li><a href="{{ url_for('auth.login', next=request.url) }}">Login</a></li>
             </ul>
         {% endif %}
     </div>
