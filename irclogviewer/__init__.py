@@ -1,12 +1,25 @@
 import datetime
+import http.client
 
-from flask import Flask, redirect, session, url_for
+from flask import Flask, redirect, session, render_template, url_for
 from flask.ext.sqlalchemy import SQLAlchemy
 from irclogviewer.dates import DateConverter
 
 
 db = SQLAlchemy()
 
+
+def render_http_status_code_template(template, status_code):
+    """Shortcut to ``render_template`` that passes in ``status_code``
+    and ``status_name`` to the template.
+
+    :param str template: template location
+    :param status_code: an HTTP status code from ``http.client``
+    """
+    status_name = http.client.responses[status_code]
+    return render_template(template,
+                           status_code=status_code,
+                           status_name=status_name), status_code
 
 def create_app():
     app = Flask(__name__)
@@ -28,6 +41,20 @@ def create_app():
     @app.route('/')
     def index():
         return redirect(url_for('logs.index'))
+
+    # noinspection PyUnusedLocal
+    @app.errorhandler(http.client.FORBIDDEN)
+    def http_forbidden(e):
+        return render_http_status_code_template(
+            'http_status_code.html',
+            http.client.FORBIDDEN)
+
+    # noinspection PyUnusedLocal
+    @app.errorhandler(http.client.NOT_FOUND)
+    def http_not_found(e):
+        return render_http_status_code_template(
+            'http_status_code.html',
+            http.client.NOT_FOUND)
 
     from irclogviewer.auth import auth as auth_blueprint
     from irclogviewer.logs import logs as logs_blueprint
