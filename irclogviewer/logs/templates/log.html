@@ -12,7 +12,13 @@
 {% block content %}
 <div id="content">
     <a name="top"></a>
-    <h1>{{log.user}} <br />{{ log.channel }} <br /> {{ log.date }}</h1>
+    <h1>
+        {{log.user}}<br />
+        {{ log.channel }}<br />
+        <a href="{{ url_for('.list_channels', date=log.date) }}">
+            {{ log.date.strftime("%a %b %d, %Y") }} <i class="fa fa-external-link"></i>
+        </a>
+    </h1>
 
     <div class="temporal-navigation">
         {% if earlier_log %}
