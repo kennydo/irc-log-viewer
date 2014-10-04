@@ -2,7 +2,7 @@
 {% from "macros.html" import no_logs_found, modified_time %}
 
 {% if specific_date %}
-    {% set title = specific_date.strftime("%a, %b %d, %Y") %}
+    {% set title = specific_date.strftime("%a %b %d, %Y") %}
     {% set date_before_this_day = specific_date|date_before %}
     {% if specific_date != today %}
         {% set date_after_this_day = specific_date|date_after %}
