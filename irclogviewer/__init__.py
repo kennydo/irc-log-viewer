@@ -1,6 +1,6 @@
 import datetime
 import http.client
-
+from urllib.parse import quote
 from flask import Flask, redirect, session, render_template, url_for
 from flask.ext.sqlalchemy import SQLAlchemy
 from irclogviewer.dates import DateConverter
@@ -37,6 +37,17 @@ def create_app():
     @app.context_processor
     def inject_today():
         return dict(today=datetime.date.today())
+
+    # noinspection PyUnusedLocal
+    @app.context_processor
+    def get_encoded_path():
+        """Get the URL-encoded path part of the input ``url``."""
+        def inner(url):
+            # '#' is an especially problematic character, since we want
+            # the unquoted string to be '%23', not '#'
+            path = url.split('/', 3)[-1].replace('#', '%23')
+            return quote('/' + path)
+        return dict(get_encoded_path=inner)
 
     # noinspection PyUnusedLocal
     @app.route('/')
