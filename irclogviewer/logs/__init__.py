@@ -1,4 +1,5 @@
 import calendar
+import http.client
 
 from flask import abort, Blueprint, render_template, request, session
 
@@ -101,7 +102,7 @@ def get_log(user, channel, date):
     """Get a specific log."""
     email = get_session_user_email()
     if not email_can_read_channel_logs(email, user, channel):
-        abort(403)
+        abort(http.client.FORBIDDEN)
 
     log = db.session.query(IrcLog)\
                     .filter(IrcLog.user == user,
@@ -109,7 +110,7 @@ def get_log(user, channel, date):
                             IrcLog.date == date)\
                     .first()
     if not log:
-        abort(404)
+        abort(http.client.NOT_FOUND)
 
     earlier_log = db.session.query(IrcLog)\
                             .filter(IrcLog.user == user,

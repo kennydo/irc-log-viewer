@@ -148,6 +148,20 @@ def command_restart(args):
     command_start(args)
 
 
+def command_debug(args):
+    """Runs the app in the foreground"""
+    cmd = [
+        path_to_bin("python"),
+        "-m", "irclogviewer",
+    ]
+
+    print("Running the following command")
+    print(" ".join(pipes.quote(c) for c in cmd))
+    subprocess.call(cmd, env={
+        "FLASK_SETTINGS": args.config,
+    })
+
+
 def command_crawl(args):
     """Crawl the IRC log directory"""
     # We don't actually need "--config" in the command args.
@@ -201,6 +215,11 @@ if __name__ == "__main__":
     restart_parser = subparsers.add_parser("restart", help="Restart the app")
     add_config_argument(restart_parser, required=True)
     restart_parser.set_defaults(func=command_restart)
+
+    debug_parser = subparsers.add_parser(
+        "debug", help="Run the app in foreground to debug")
+    add_config_argument(debug_parser, required=True)
+    debug_parser.set_defaults(func=command_debug)
 
     crawl_parser = subparsers.add_parser("crawl", help="Crawl the IRC logs")
     add_config_argument(crawl_parser, required=True)
