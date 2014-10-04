@@ -21,6 +21,7 @@ def render_http_status_code_template(template, status_code):
                            status_code=status_code,
                            status_name=status_name), status_code
 
+
 def create_app():
     app = Flask(__name__)
     app.config.from_envvar('FLASK_SETTINGS')
