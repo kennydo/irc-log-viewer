@@ -70,6 +70,7 @@ def authorized(resp):
             request.args['error_reason'],
             request.args['error_description']
         )
+    session.permanent = True
     session['google_token'] = (resp['access_token'], '')
     session['user'] = google.get('userinfo').data
     next_url = session.pop('next_url', url_for('logs.index'))
